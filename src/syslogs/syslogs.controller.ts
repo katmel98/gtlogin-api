@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Param, Post, Body, Put, Delete } from '@nestjs/common';
-import { ApiUseTags } from '../../node_modules/@nestjs/swagger';
+import { ApiUseTags } from '@nestjs/swagger';
 
 @ApiUseTags('syslogs')
 @Controller('syslogs')

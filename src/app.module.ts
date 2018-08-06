@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MessagesController } from './messages/messages.controller';
-import { PermissionsController } from './permissions/permissions.controller';
-import { MessagesModule } from './messages/messages.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { RolesModule } from './roles/roles.module';
-import { SyslogsModule } from './syslogs/syslogs.module';
-import { UsersModule } from 'users/users.module';
+import { MongooseModule } from '@nestjs/mongoose';
+
+import { UsersModule } from './users/users.module';
+import { PermissionsModule } from 'permissions/permissions.module';
+import { RolesModule } from 'roles/roles.module';
+import { MessagesModule } from 'messages/messages.module';
+import { SyslogsModule } from 'syslogs/syslogs.module';
 
 @Module({
   imports: [
+              MongooseModule.forRoot('mongodb://localhost:27017/gtlogin'),
               UsersModule,
               PermissionsModule,
               RolesModule,
@@ -18,6 +17,6 @@ import { UsersModule } from 'users/users.module';
               SyslogsModule,
             ],
   controllers: [],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
