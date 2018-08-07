@@ -43,7 +43,7 @@
     "validator": "^10.5.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^5.0.0",
+    "@nestjs/testing": "^5.1.0",
     "@types/express": "^4.0.39",
     "@types/jest": "^21.1.8",
     "@types/node": "^9.3.0",
@@ -51,7 +51,7 @@
     "jest": "^21.2.1",
     "nodemon": "^1.14.1",
     "prettier": "^1.11.1",
-    "supertest": "^3.0.0",
+    "supertest": "^3.1.0",
     "ts-jest": "^21.2.4",
     "ts-loader": "^4.1.0",
     "ts-node": "^4.1.0",

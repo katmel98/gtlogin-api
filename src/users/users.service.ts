@@ -12,8 +12,12 @@ export class UsersService {
 
   // CREATE
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const createdUser = new this.userModel(createUserDto);
-    return await createdUser.save();
+    try {
+      const createdUser = new this.userModel(createUserDto);
+      return await createdUser.save();
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   // FINDALL
@@ -53,7 +57,7 @@ export class UsersService {
           }, {
             $set: updateUserDto,
           });
-          if ( resp.nModified == 0 ){
+          if ( resp.nModified === 0 ){
             throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
           } else {
             return this.userModel.findOne({

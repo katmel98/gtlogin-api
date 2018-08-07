@@ -4,7 +4,7 @@ import { Controller, Get,
          NotFoundException,
          Patch} from '@nestjs/common';
 
-import { ApiUseTags, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,6 +19,7 @@ export class UsersController {
 
     // GET /users
     @Get()
+    @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
@@ -29,6 +30,7 @@ export class UsersController {
 
     // GET /users/:id
     @Get(':id')
+    @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -49,6 +51,7 @@ export class UsersController {
 
     // POST /users
     @Post()
+    @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -69,8 +72,9 @@ export class UsersController {
         }
     }
 
-    // PATCH /users/:id
+    // PUT /users/:id
     @Put(':id')
+    @ApiOperation({ title: 'Put a model instance and persist it into the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -91,6 +95,7 @@ export class UsersController {
 
     // DELETE /users/:id
     @Delete(':id')
+    @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -109,4 +114,43 @@ export class UsersController {
         }
     }
 
+    @Post('login')
+    @ApiOperation({ title: 'Login a user with username/email and password.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async login() {
+        return `Push login`;
+    }
+
+    @Post('logout')
+    @ApiOperation({ title: 'Logout a user with access token.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async logout() {
+        return `Push logout`;
+    }
+
+    @Post('reset')
+    @ApiOperation({ title: 'Reset password for a user with email.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async reset() {
+        return `Reset Password`;
+    }
+
+    @Post('reset-password')
+    @ApiOperation({ title: 'Reset user\'s password via a password-reset token.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async resetPassword() {
+        return `Reset Password Reset`;
+    }
+
+    @Put('update-password')
+    @ApiOperation( { title: 'Allows a logged user to change his/her password.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async updatePassword() {
+        return `Update Password`;
+    }
 }
