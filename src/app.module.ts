@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { UsersModule } from './users/users.module';
+import { UsersModule } from 'users/users.module';
 import { PermissionsModule } from 'permissions/permissions.module';
 import { RolesModule } from 'roles/roles.module';
 import { MessagesModule } from 'messages/messages.module';

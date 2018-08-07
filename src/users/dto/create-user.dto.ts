@@ -19,4 +19,13 @@ export class CreateUserDto {
 
     @ApiModelProperty()
     readonly tokens: string;
+
+    @ApiModelProperty()
+    readonly created_at: number;
+
+    @ApiModelProperty()
+    readonly updated_at: number;
+
+    
+
 }

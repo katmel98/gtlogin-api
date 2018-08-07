@@ -1,10 +1,16 @@
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 import { AppModule } from 'app.module';
 import { UsersModule } from 'users/users.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const instance = express();
+  instance.use(bodyParser.json());
+
+  const app = await NestFactory.create(AppModule, instance);
 
   const options = new DocumentBuilder()
     .setTitle('GTLogin API')
@@ -14,6 +20,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(3000, () => {
+    console.log('\t');
+    console.log('Application listening on *:3000');
+  });
 }
 bootstrap();

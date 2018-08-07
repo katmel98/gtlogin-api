@@ -16,7 +16,7 @@ export class UsersService {
       const createdUser = new this.userModel(createUserDto);
       return await createdUser.save();
     } catch (e) {
-      console.log(e);
+        return e;
     }
   }
 
@@ -96,4 +96,10 @@ export class UsersService {
 
   }
 
+  // FIND ONE USER BY TOKEN
+  findOneByToken(token: string) {}
+
+  // USERS SELF DATA
+  me() {}
+ 
 }

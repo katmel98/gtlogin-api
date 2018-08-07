@@ -7,4 +7,6 @@ export interface User extends Document {
     readonly password: string;
     readonly email: string;
     readonly tokens: string;
+    readonly created_at: number;
+    readonly updated_at: number;
 }

@@ -2,7 +2,8 @@ import { Controller, Get,
          Param, Post, Put, Body, Delete, InternalServerErrorException,
          UnprocessableEntityException, BadRequestException,
          NotFoundException,
-         Patch} from '@nestjs/common';
+         UseGuards,
+         } from '@nestjs/common';
 
 import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 
@@ -10,6 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
+import { AuthGuard } from '../../node_modules/@nestjs/passport';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -51,6 +53,7 @@ export class UsersController {
 
     // POST /users
     @Post()
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -112,6 +115,15 @@ export class UsersController {
                 throw new BadRequestException(message);
             }
         }
+    }
+
+    // GET /users/me
+    @Get('me')
+    @ApiOperation({ title: 'Obtains self user data'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    async me() {
+        return `Push login`;
     }
 
     @Post('login')
