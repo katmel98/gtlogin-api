@@ -5,9 +5,11 @@ import { ObjectID } from 'mongodb';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
+  saltRounds: any;
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   // CREATE
@@ -45,6 +47,22 @@ export class UsersService {
       throw e;
     }
   }
+
+  // FIND BY EMAIL
+  async getUserByEmail(user_email: string): Promise<User> {
+    try {
+      return this.userModel.findOne({
+        email: user_email,
+      }).then( (res) => {
+        if ( !res ) {
+          throw new HttpException({ error: 'NOT_FOUND', message: `${user_email} not found`, status: HttpStatus.NOT_FOUND}, 404);
+        }
+        return res;
+      } );
+  } catch (e) {
+    throw e;
+  }
+}
 
   // UPDATE
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
@@ -101,5 +119,14 @@ export class UsersService {
 
   // USERS SELF DATA
   me() {}
- 
+
+  async getHash(password: string): Promise<string>  {
+    this.saltRounds = 16;
+    return bcrypt.hash(password, this.saltRounds);
+  }
+
+  async compareHash(password, hash): Promise<boolean>  {
+    return bcrypt.compare(password, hash);
+  }
+
 }

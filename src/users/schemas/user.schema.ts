@@ -15,7 +15,7 @@ export const UserSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: validator.isEmail,
-      message: '{VALUE} is mot a valid email',
+      message: '{VALUE} is not a valid email',
     },
   },
   password: {
@@ -30,7 +30,7 @@ export const UserSchema = new mongoose.Schema({
     updated_at: {
     type: Number,
     default: null,
-  }
+  },
 
 });
 
@@ -48,7 +48,10 @@ UserSchema.pre('save', function(next) {
   }
 
   if (user.isModified('password')) {
-      bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.genSalt(10, (e, salt) => {
+          if ( e ){
+            console.log(e);
+          }
           bcrypt.hash(user.password, salt, (err, hash) => {
               if ( err ){
                 console.log(err);

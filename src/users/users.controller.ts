@@ -1,19 +1,20 @@
 import { Controller, Get,
          Param, Post, Put, Body, Delete, InternalServerErrorException,
          UnprocessableEntityException, BadRequestException,
-         NotFoundException,
-         UseGuards,
+         NotFoundException, UseGuards,
          } from '@nestjs/common';
 
-import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
-import { AuthGuard } from '../../node_modules/@nestjs/passport';
+
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 
@@ -21,6 +22,7 @@ export class UsersController {
 
     // GET /users
     @Get()
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -32,6 +34,7 @@ export class UsersController {
 
     // GET /users/:id
     @Get(':id')
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -53,7 +56,7 @@ export class UsersController {
 
     // POST /users
     @Post()
-    @UseGuards(AuthGuard('bearer'))
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -77,6 +80,7 @@ export class UsersController {
 
     // PUT /users/:id
     @Put(':id')
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Put a model instance and persist it into the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -98,6 +102,7 @@ export class UsersController {
 
     // DELETE /users/:id
     @Delete(':id')
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -119,6 +124,7 @@ export class UsersController {
 
     // GET /users/me
     @Get('me')
+    @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Obtains self user data'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
@@ -164,5 +170,26 @@ export class UsersController {
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     async updatePassword() {
         return `Update Password`;
+    }
+
+    // GET /users/getUserByEmail/:email
+    @Get('/getUserByEmail/:email')
+    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ title: 'Find a model instance by {{email}} from the data source.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async getUserByEmail(@Param('email') email: string): Promise<User> {
+        try {
+            return await this.usersService.getUserByEmail(email);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
     }
 }

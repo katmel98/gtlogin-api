@@ -26,6 +26,4 @@ export class CreateUserDto {
     @ApiModelProperty()
     readonly updated_at: number;
 
-    
-
 }

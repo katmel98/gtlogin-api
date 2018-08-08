@@ -16,6 +16,7 @@ async function bootstrap() {
     .setTitle('GTLogin API')
     .setDescription('GTLogin API endpoints')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
@@ -25,4 +26,5 @@ async function bootstrap() {
     console.log('Application listening on *:3000');
   });
 }
+
 bootstrap();
