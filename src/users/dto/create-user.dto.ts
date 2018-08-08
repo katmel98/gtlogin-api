@@ -1,4 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
+import { TokensDto } from './tokens.dto';
 
 export class CreateUserDto {
 
@@ -18,7 +19,7 @@ export class CreateUserDto {
     readonly email: string;
 
     @ApiModelProperty()
-    readonly tokens: Array<string>;
+    readonly tokens: ArrayList<TokensDto>;
 
     @ApiModelProperty()
     readonly created_at: number;

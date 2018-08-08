@@ -22,7 +22,16 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  tokens: String,
+  tokens: [{
+    access: {
+        type: String,
+        required: true,
+    },
+    token: {
+        type: String,
+        required: true,
+    },
+  }],
   created_at: {
     type: Number,
     default: null,
@@ -33,7 +42,6 @@ export const UserSchema = new mongoose.Schema({
   },
 
 });
-
 
 UserSchema.pre('save', function(next) {
 

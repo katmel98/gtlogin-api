@@ -1,12 +1,14 @@
 import { Controller, Post, HttpStatus, Response, Body, Param,
-  UnprocessableEntityException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+  UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import {LoginUserDto} from './dto/login-user.dto';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserDto } from 'users/dto/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('auth')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -46,6 +48,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   async logoutUser(@Param('token') token: string) {
 

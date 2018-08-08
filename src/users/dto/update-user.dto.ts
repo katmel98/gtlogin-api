@@ -14,5 +14,4 @@ export class UpdateUserDto {
     @ApiModelProperty()
     updated_at: number;
 
-
 }
