@@ -6,6 +6,7 @@ import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
+import * as moment from 'moment';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,8 @@ export class UsersService {
         throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
       }
       try {
+          const date = moment().valueOf();
+          updateUserDto.updated_at = date;
           const resp = await this.userModel.updateOne({
             _id: id,
           }, {
@@ -127,6 +130,17 @@ export class UsersService {
 
   async compareHash(password, hash): Promise<boolean>  {
     return bcrypt.compare(password, hash);
+  }
+
+  async findUserExistsByEmail(user_email: string): Promise<boolean> {
+    return this.userModel.findOne({
+      email: user_email,
+    }).then( (res) => {
+      if ( res ) {
+        return true;
+      }
+      return false;
+    } );
   }
 
 }

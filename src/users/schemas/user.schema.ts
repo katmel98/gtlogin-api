@@ -34,18 +34,16 @@ export const UserSchema = new mongoose.Schema({
 
 });
 
+
 UserSchema.pre('save', function(next) {
+
   const user = this;
   const date = moment().valueOf();
 
-  console.log(user.isNew);
-
-  if  ( user.isNew ) {
+  if ( user.isNew ) {
     user.created_at = date;
-  } else {
-    console.log('is not new');
-    user.updated_at = date;
   }
+  user.updated_at = date;
 
   if (user.isModified('password')) {
       bcrypt.genSalt(10, (e, salt) => {

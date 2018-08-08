@@ -1,4 +1,5 @@
-import { Controller, Post, HttpStatus, Response, Body } from '@nestjs/common';
+import { Controller, Post, HttpStatus, Response, Body, Param,
+  UnprocessableEntityException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import {LoginUserDto} from './dto/login-user.dto';
@@ -30,19 +31,23 @@ export class AuthController {
   }
 
   @Post('register')
-  async registerUser(@Response() res: any, @Body() body: CreateUserDto) {
-    if (!(body && body.email && body.password)) {
-      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Email and password are required!' });
+  async registerUser(@Body() body: CreateUserDto) {
+    try{
+        return await this.userService.create(body);
+    } catch (e) {
+      const message = e.message;
+      if ( e.name === 'ValidationError' ){
+          throw new UnprocessableEntityException(message);
+      }else if ( e.name === 'MongoError' ){
+          throw new BadRequestException(message);
+      } else {
+          throw new InternalServerErrorException();
+      }
     }
+  }
 
-    let user = await this.userService.getUserByEmail(body.email);
+  @Post('logout')
+  async logoutUser(@Param('token') token: string) {
 
-    if (user) {
-      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Email exists' });
-    } else {
-      user = await this.userService.create(body);
-    }
-
-    return res.status(HttpStatus.OK).json(user);
   }
 }

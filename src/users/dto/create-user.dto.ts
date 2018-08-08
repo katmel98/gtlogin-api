@@ -18,7 +18,7 @@ export class CreateUserDto {
     readonly email: string;
 
     @ApiModelProperty()
-    readonly tokens: string;
+    readonly tokens: Array<string>;
 
     @ApiModelProperty()
     readonly created_at: number;

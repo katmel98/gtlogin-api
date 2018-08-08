@@ -12,18 +12,7 @@ export class UpdateUserDto {
     readonly lastname: string;
 
     @ApiModelProperty()
-    readonly password: string;
+    updated_at: number;
 
-    @ApiModelProperty()
-    readonly email: string;
-
-    @ApiModelProperty()
-    readonly tokens: string;
-
-    @ApiModelProperty()
-    readonly created_at: number;
-
-    @ApiModelProperty()
-    readonly updated_at: number;
 
 }
