@@ -1,3 +1,4 @@
+import { Token } from './interfaces/token.interface';
 import * as bcrypt from 'bcryptjs';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -148,13 +149,10 @@ export class UsersService {
 
   }
 
-  // FIND ONE USER BY TOKEN
-  async findOneByToken(token: string): Promise<User>{
-
-  }
-
   // USERS SELF DATA
-  me() {}
+  async me() {
+    // return this.userModel
+  }
 
   async getHash(password: string): Promise<string>  {
     this.saltRounds = 16;

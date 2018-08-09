@@ -23,14 +23,10 @@ export class AuthService {
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {
-    console.log('AUTH SERVICE');
-    console.log(payload);
     return await this.userService.getUserByEmail(payload.user.email);
   }
 
   async validateUserByToken(token: string): Promise<any> {
-    console.log('AUTH SERVICE');
-    console.log(token);
     return await this.userService.getUserByToken(token);
   }
 

@@ -1,7 +1,7 @@
 import { Controller, Get,
          Param, Post, Put, Body, Delete, InternalServerErrorException,
          UnprocessableEntityException, BadRequestException,
-         NotFoundException, UseGuards,
+         NotFoundException, UseGuards, Req,
          } from '@nestjs/common';
 
 import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -128,14 +128,14 @@ export class UsersController {
     }
 
     // GET /users/me
-    @Get('me')
+    @Get('/me/info')
     @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Obtains self user data'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
-    async me() {
-        return `Push login`;
+    info(@Req() request: Request) {
+        return request.user;
     }
 
     @Post('reset')
