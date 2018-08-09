@@ -12,7 +12,7 @@ export class AuthService {
     const secretOrKey = process.env.JWT_SECRET;
     const user = { email };
     const access = 'auth';
-    const token = jwt.sign(user, secretOrKey, { expiresIn });
+    const token = jwt.sign({user, access}, secretOrKey, { expiresIn });
     const User = await this.userService.getUserByEmail(user.email);
 
     User.tokens.push({access, token});
@@ -23,16 +23,15 @@ export class AuthService {
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.userService.getUserByEmail(payload.email);
+    console.log('AUTH SERVICE');
+    console.log(payload);
+    return await this.userService.getUserByEmail(payload.user.email);
   }
 
-//   async removeToken(token: string) {
-//     var user = this;
-//     return user.update({
-//         $pull: {
-//             tokens: { token }
-//         }
-//     });
-// };
+  async validateUserByToken(token: string): Promise<any> {
+    console.log('AUTH SERVICE');
+    console.log(token);
+    return await this.userService.getUserByToken(token);
+  }
 
 }

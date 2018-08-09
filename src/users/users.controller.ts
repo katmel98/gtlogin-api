@@ -22,7 +22,7 @@ export class UsersController {
 
     // GET /users
     @Get()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -35,7 +35,7 @@ export class UsersController {
 
     // GET /users/:id
     @Get(':id')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -58,7 +58,7 @@ export class UsersController {
 
     // POST /users
     @Post()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -83,7 +83,7 @@ export class UsersController {
 
     // PUT /users/:id
     @Put(':id')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Put a model instance and persist it into the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -106,7 +106,7 @@ export class UsersController {
 
     // DELETE /users/:id
     @Delete(':id')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -129,7 +129,7 @@ export class UsersController {
 
     // GET /users/me
     @Get('me')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Obtains self user data'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -167,7 +167,7 @@ export class UsersController {
 
     // DELETE /users/me/:token
     @Delete('/me/:token')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Delete a model instance\'s token by {{token}} from user.'})
     @ApiResponse({ status: 200, description: 'The token has been successfully removed.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -191,7 +191,7 @@ export class UsersController {
 
     // GET /users/getUserByEmail/:email
     @Get('/getUserByEmail/:email')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Find a model instance by {{email}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -213,7 +213,7 @@ export class UsersController {
 
     // GET /users/getUserByToken/:token
     @Get('/getUserByToken/:token')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Find a model instance by {{token}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})

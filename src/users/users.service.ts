@@ -87,7 +87,7 @@ export class UsersService {
         return Promise.reject();
     }
     const User = await this.userModel.findOne({
-      'email': decoded.email,
+      'email': decoded.user.email,
       'tokens.access': 'auth',
       'tokens.token': token,
     });
