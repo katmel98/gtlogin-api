@@ -1,14 +1,16 @@
+import 'config/config';
+
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from 'app.module';
-import { UsersModule } from 'users/users.module';
 
 async function bootstrap() {
   const instance = express();
   instance.use(bodyParser.json());
+  const port = process.env.PORT || 3000;
 
   const app = await NestFactory.create(AppModule, instance);
 
@@ -21,9 +23,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000, () => {
-    console.log('\t');
-    console.log('Application listening on *:3000');
+  await app.listen(port, () => {
+    console.log(`Application listening on *:${port}`);
   });
 }
 

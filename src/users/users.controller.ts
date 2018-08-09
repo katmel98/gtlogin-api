@@ -25,6 +25,7 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
     async findAll(): Promise<User[]> {
@@ -38,6 +39,7 @@ export class UsersController {
     @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
     async findOne(@Param('id') id: string): Promise<User> {
@@ -60,6 +62,7 @@ export class UsersController {
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 422, description: 'Entity Validation Error.'})
     async create(@Body() createUserDto: CreateUserDto) {
@@ -84,6 +87,7 @@ export class UsersController {
     @ApiOperation({ title: 'Put a model instance and persist it into the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
     async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
@@ -106,6 +110,7 @@ export class UsersController {
     @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
     async remove(@Param('id') id: string): Promise<User> {
@@ -127,30 +132,16 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ title: 'Obtains self user data'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     async me() {
         return `Push login`;
     }
 
-    @Post('login')
-    @ApiOperation({ title: 'Login a user with username/email and password.'})
-    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
-    @ApiResponse({ status: 403, description: 'Forbidden.'})
-    async login() {
-        return `Push login`;
-    }
-
-    @Post('logout')
-    @ApiOperation({ title: 'Logout a user with access token.'})
-    @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
-    @ApiResponse({ status: 403, description: 'Forbidden.'})
-    async logout() {
-        return `Push logout`;
-    }
-
     @Post('reset')
     @ApiOperation({ title: 'Reset password for a user with email.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     async reset() {
         return `Reset Password`;
@@ -159,6 +150,7 @@ export class UsersController {
     @Post('reset-password')
     @ApiOperation({ title: 'Reset user\'s password via a password-reset token.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     async resetPassword() {
         return `Reset Password Reset`;
@@ -167,10 +159,35 @@ export class UsersController {
     @Put('update-password')
     @ApiOperation( { title: 'Allows a logged user to change his/her password.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     async updatePassword() {
         return `Update Password`;
     }
+
+    // DELETE /users/me/:token
+    @Delete('/me/:token')
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ title: 'Delete a model instance\'s token by {{token}} from user.'})
+    @ApiResponse({ status: 200, description: 'The token has been successfully removed.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async removeToken(@Param('token') token: string): Promise<User> {
+        // return `This action removes a #${id} user`;
+        try {
+            return await this.usersService.removeToken(token);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+    }
+
 
     // GET /users/getUserByEmail/:email
     @Get('/getUserByEmail/:email')
@@ -178,6 +195,7 @@ export class UsersController {
     @ApiOperation({ title: 'Find a model instance by {{email}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
     async getUserByEmail(@Param('email') email: string): Promise<User> {
@@ -192,4 +210,27 @@ export class UsersController {
             }
         }
     }
+
+    // GET /users/getUserByToken/:token
+    @Get('/getUserByToken/:token')
+    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ title: 'Find a model instance by {{token}} from the data source.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async getUserByToken(@Param('token') token: string): Promise<User> {
+        try {
+            return await this.usersService.getUserByToken(token);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+    }
+
 }

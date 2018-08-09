@@ -1,8 +1,8 @@
 import { Controller, Post, HttpStatus, Response, Body, Param,
   UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import {LoginUserDto} from './dto/login-user.dto';
+import { UsersService } from 'users/users.service';
+import { LoginUserDto } from './dto/login-user.dto';
 import { ApiOperation, ApiResponse, ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserDto } from 'users/dto/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +16,9 @@ export class AuthController {
     private readonly userService: UsersService) {}
 
   @Post('login')
+  @ApiOperation({ title: 'Login a user with username/email and password.'})
+  @ApiResponse({ status: 200, description: 'The user is loggedin.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   async loginUser(@Response() res: any, @Body() body: LoginUserDto) {
     if (!(body && body.email && body.password)) {
       return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username and password are required!' });
@@ -33,6 +36,9 @@ export class AuthController {
   }
 
   @Post('register')
+  @ApiOperation({ title: 'Registers a new user.'})
+  @ApiResponse({ status: 200, description: 'The user has been created.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   async registerUser(@Body() body: CreateUserDto) {
     try{
         return await this.userService.create(body);
@@ -48,9 +54,13 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ title: 'Logout a user with access token.'})
+  @ApiResponse({ status: 200, description: 'The user has been logout.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   async logoutUser(@Param('token') token: string) {
-
+    return 'Logged out';
   }
 }
