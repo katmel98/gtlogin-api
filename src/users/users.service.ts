@@ -1,4 +1,3 @@
-import { Token } from './interfaces/token.interface';
 import * as bcrypt from 'bcryptjs';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -13,6 +12,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRolesDto } from 'roles/dto/user-roles.dto';
 
 @Injectable()
 export class UsersService {
@@ -149,10 +149,74 @@ export class UsersService {
 
   }
 
-  // USERS SELF DATA
-  async me() {
-    // return this.userModel
+  // DELETE TOKEN FROM USER
+  async removeToken(token: string): Promise<any> {
+    console.log(token)
+    try {
+      const date = moment().valueOf();
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (e) {
+          // return new Promise((resolve, reject) => {
+          //     reject();
+          // });
+          console.log(e)
+          return Promise.reject();
+      }
+      const resp = await this.userModel.update({
+        $pull: {
+            tokens: { token },
+        },
+      });
+      if ( resp.nModified === 0 ){
+        throw new HttpException({ error: 'NOT_FOUND', message: `TOKEN ${token} not found`, status: HttpStatus.NOT_FOUND}, 404);
+      } else {
+        // let User = await this.userModel.findOne({ email: decoded.user.email });
+        // User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
+        const response = {statusCode: 200, message: `Token removed from user ${decoded.user.email}.`};
+        return response;
+      }
+    } catch (e) {
+      if ( e.message.error === 'NOT_FOUND' ){
+        throw new HttpException({ error: 'NOT_FOUND', message: `TOKEN ${token} not found`, status: HttpStatus.NOT_FOUND}, 404);
+      } else {
+        throw new HttpException({error: 'TOKEN_NOT_VALID', message: `TOKEN ${token} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
+      }
+    }
+
   }
+
+  // SET USER ROLES
+  async setRoles(id: string, userRolesDto: UserRolesDto): Promise<User> {
+    if ( !ObjectID.isValid(id) ){
+        throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
+    }
+    try {
+        const date = moment().valueOf();
+        const resp = await this.userModel.updateOne({
+          _id: id,
+        }, {
+          $set: {
+              updated_at: date,
+              roles: userRolesDto.roles,
+          },
+        });
+        if ( resp.nModified === 0 ){
+          throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
+        } else {
+          let User = await this.userModel.findOne({ _id: id });
+          User = _.pick(User, ['_id', 'email', 'roles', 'created_at', 'updated_at']);
+          return User;
+        }
+    } catch (e) {
+      if ( e.message.error === 'NOT_FOUND' ){
+        throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
+      } else {
+        throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
+      }
+    }
+}
 
   async getHash(password: string): Promise<string>  {
     this.saltRounds = 16;
@@ -174,11 +238,4 @@ export class UsersService {
     } );
   }
 
-  async removeToken(token: string) {
-    return await this.userModel.update({
-        $pull: {
-            tokens: { token },
-        },
-    });
-  }
 }

@@ -32,6 +32,7 @@ export const UserSchema = new mongoose.Schema({
         required: false,
     },
   }],
+  roles: [],
   created_at: {
     type: Number,
     default: null,
@@ -50,8 +51,6 @@ UserSchema.methods.generateAuthToken = function() {
 
   user.tokens.push({access, token}); // this sometimes not work in some mongodb versions
   // user.tokens = user.token.concat([{access, token}]);
-
-  console.log(user);
 
   return user.save().then(() => {
       return token;

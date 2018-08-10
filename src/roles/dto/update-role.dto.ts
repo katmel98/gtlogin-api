@@ -1,18 +1,12 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class UpdateUserDto {
+export class UpdateRoleDto {
 
     @ApiModelProperty()
     readonly name: string;
 
     @ApiModelProperty()
-    readonly surname: string;
-
-    @ApiModelProperty()
-    readonly lastname: string;
-
-    @ApiModelProperty()
-    readonly roles: ArrayList<any>;
+    readonly descrip: string;
 
     @ApiModelProperty()
     updated_at: number;

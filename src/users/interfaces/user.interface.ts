@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 import { Token } from './token.interface';
 
+
 export interface User extends Document {
     readonly  id: string;
     readonly name: string;
@@ -9,6 +10,7 @@ export interface User extends Document {
     readonly password: string;
     readonly email: string;
     readonly tokens: Token[];
+    readonly roles: string[];
     readonly created_at: number;
     readonly updated_at: number;
 }

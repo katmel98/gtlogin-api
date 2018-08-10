@@ -8,17 +8,20 @@ import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/sw
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
 
 import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from './users.service';
+import { UserRolesDto } from 'roles/dto/user-roles.dto';
+import { RolesService } from 'roles/roles.service';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 
-    constructor(private readonly usersService: UsersService){}
+    constructor(private readonly usersService: UsersService,
+                private readonly rolesService: RolesService){}
 
     // GET /users
     @Get()
@@ -174,7 +177,7 @@ export class UsersController {
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
-    async removeToken(@Param('token') token: string): Promise<User> {
+    async removeToken(@Param('token') token: string): Promise<any> {
         // return `This action removes a #${id} user`;
         try {
             return await this.usersService.removeToken(token);
@@ -187,7 +190,6 @@ export class UsersController {
             }
         }
     }
-
 
     // GET /users/getUserByEmail/:email
     @Get('/getUserByEmail/:email')
@@ -231,6 +233,29 @@ export class UsersController {
                 throw new BadRequestException(message);
             }
         }
+    }
+
+    // POST /users/:id/setRoles
+    @Post(':id/setRoles')
+    @UseGuards(AuthGuard('bearer'))
+    @ApiOperation({ title: 'Set user roles'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async addRoles(@Param('id') id: string, @Body() userRolesDto: UserRolesDto): Promise<User> {
+        try {
+            return this.rolesService.setRoles(id, userRolesDto);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+
     }
 
 }
