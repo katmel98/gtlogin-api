@@ -1,4 +1,4 @@
-import { Controller, Get,
+import { Controller, Get, Request,
          Param, Post, Put, Body, Delete, InternalServerErrorException,
          UnprocessableEntityException, BadRequestException,
          NotFoundException, UseGuards, Req,
@@ -12,8 +12,8 @@ import { User } from './interfaces/user.interface';
 
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
-import { UserRolesDto } from 'roles/dto/user-roles.dto';
-import { RolesService } from 'roles/roles.service';
+import { RolesService } from '../roles/roles.service';
+import { RolesDto } from '../roles/dto/roles.dto';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
@@ -138,7 +138,7 @@ export class UsersController {
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     info(@Req() request: Request) {
-        return request.user;
+        return request['user'];
     }
 
     @Post('reset')
@@ -244,9 +244,9 @@ export class UsersController {
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
-    async addRoles(@Param('id') id: string, @Body() userRolesDto: UserRolesDto): Promise<User> {
+    async addRoles(@Param('id') id: string, @Body() rolesDto: RolesDto): Promise<User> {
         try {
-            return this.rolesService.setRoles(id, userRolesDto);
+            return this.rolesService.setRoles('user', id, rolesDto);
         } catch (e){
             const message = e.message.message;
             if ( e.message.error === 'NOT_FOUND'){

@@ -1,3 +1,4 @@
+import { RolesService } from './../roles/roles.service';
 import * as bcrypt from 'bcryptjs';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -12,20 +13,24 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRolesDto } from 'roles/dto/user-roles.dto';
+import { RolesDto } from '../roles/dto/roles.dto';
 
 @Injectable()
 export class UsersService {
   saltRounds: any;
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
+  getUserModel() {
+    return this.userModel;
+  }
+
   // CREATE
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const createdUser = new this.userModel(createUserDto);
-      let User = await createdUser.save();
-      User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
-      return User;
+      let user = await createdUser.save();
+      user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
+      return user;
     } catch (e) {
         return e;
     }
@@ -66,8 +71,8 @@ export class UsersService {
         if ( !res ) {
           throw new HttpException({ error: 'NOT_FOUND', message: `${user_email} not found`, status: HttpStatus.NOT_FOUND}, 404);
         }
-        const User = _.pick(res, ['_id', 'name', 'surname', 'lastname', 'email', 'password', 'tokens', 'created_at', 'update_at']);
-        return User;
+        const user = _.pick(res, ['_id', 'name', 'surname', 'lastname', 'email', 'password', 'tokens', 'created_at', 'update_at']);
+        return user;
       } );
     } catch (e) {
       throw e;
@@ -87,12 +92,12 @@ export class UsersService {
 
         return Promise.reject();
     }
-    const User = await this.userModel.findOne({
+    const user = await this.userModel.findOne({
       'email': decoded.user.email,
       'tokens.access': 'auth',
       'tokens.token': token,
     });
-    return User;
+    return user;
 
   }
 
@@ -112,9 +117,9 @@ export class UsersService {
           if ( resp.nModified === 0 ){
             throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
           } else {
-            let User = await this.userModel.findOne({ _id: id });
-            User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
-            return User;
+            let user = await this.userModel.findOne({ _id: id });
+            user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
+            return user;
           }
       } catch (e) {
         if ( e.message.error === 'NOT_FOUND' ){
@@ -131,14 +136,14 @@ export class UsersService {
       throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
     }
     try {
-      let User = await this.userModel.findOneAndRemove({
+      let user = await this.userModel.findOneAndRemove({
         _id: id,
       });
-      if ( !User ) {
+      if ( !user ) {
           throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
       }
-      User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email']);
-      return User;
+      user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email']);
+      return user;
     } catch (e) {
       if ( e.message.error === 'NOT_FOUND' ){
         throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
@@ -188,7 +193,7 @@ export class UsersService {
   }
 
   // SET USER ROLES
-  async setRoles(id: string, userRolesDto: UserRolesDto): Promise<User> {
+  async setRoles(id: string, rolesDto: RolesDto): Promise<User> {
     if ( !ObjectID.isValid(id) ){
         throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
     }
@@ -199,15 +204,15 @@ export class UsersService {
         }, {
           $set: {
               updated_at: date,
-              roles: userRolesDto.roles,
+              roles: rolesDto.roles,
           },
         });
         if ( resp.nModified === 0 ){
           throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
         } else {
-          let User = await this.userModel.findOne({ _id: id });
-          User = _.pick(User, ['_id', 'email', 'roles', 'created_at', 'updated_at']);
-          return User;
+          let user = await this.userModel.findOne({ _id: id });
+          user = _.pick(user, ['_id', 'email', 'roles', 'created_at', 'updated_at']);
+          return user;
         }
     } catch (e) {
       if ( e.message.error === 'NOT_FOUND' ){

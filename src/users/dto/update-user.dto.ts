@@ -1,4 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
+import * as ArrayList from 'arraylist';
 
 export class UpdateUserDto {
 
@@ -12,7 +13,7 @@ export class UpdateUserDto {
     readonly lastname: string;
 
     @ApiModelProperty()
-    readonly roles: ArrayList<any>;
+    readonly roles: ArrayList<string>;
 
     @ApiModelProperty()
     updated_at: number;

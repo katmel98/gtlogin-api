@@ -1,3 +1,4 @@
+import { UsersService } from './../users/users.service';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
@@ -7,22 +8,28 @@ import { ObjectID } from 'mongodb';
 import { Model } from 'mongoose';
 
 import { Role } from './interfaces/role.interface';
-import { User } from '../users/interfaces/user.interface';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UserRolesDto } from './dto/user-roles.dto';
+import { RolesDto } from './dto/roles.dto';
+import { GroupsService } from '../groups/groups.service';
 
 @Injectable()
 export class RolesService {
-    constructor(@InjectModel('Role') private readonly roleModel: Model<Role>,
-                @InjectModel('User') private readonly userModel: Model<User>) {}
+    userModel: any;
+    groupModel: any;
+    constructor( @InjectModel('Role') private readonly roleModel: Model<Role>,
+                 private readonly usersService: UsersService,
+                 private readonly groupsService: GroupsService ) {
+                     this.userModel = this.usersService.getUserModel();
+                     this.groupModel = this.groupsService.getGroupModel();
+                 }
 
     // CREATE
     async create(createRoleDto: CreateRoleDto): Promise<Role> {
         try {
         const createdRole = new this.roleModel(createRoleDto);
-        let Role = await createdRole.save();
-        Role = _.pick(Role, ['_id', 'name', 'descrip', 'created_at', 'update_at']);
-        return Role;
+        let role = await createdRole.save();
+        role = _.pick(role, ['_id', 'name', 'descrip', 'created_at', 'update_at']);
+        return role;
         } catch (e) {
             return e;
         }
@@ -61,14 +68,14 @@ export class RolesService {
             throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
         }
         try {
-            let User = await this.roleModel.findOneAndRemove({
+            let user = await this.roleModel.findOneAndRemove({
                 _id: id,
             });
-            if ( !User ) {
+            if ( !user ) {
                 throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
             }
-            User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email']);
-            return User;
+            user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email']);
+            return user;
         } catch (e) {
             if ( e.message.error === 'NOT_FOUND' ){
                 throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
@@ -80,26 +87,43 @@ export class RolesService {
     }
 
     // SET USER ROLES
-    async setRoles(id: string, userRolesDto: UserRolesDto): Promise<User> {
+    async setRoles(type: string, id: string, rolesDto: RolesDto): Promise<any> {
         if ( !ObjectID.isValid(id) ){
             throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
         }
         try {
             const date = moment().valueOf();
-            const resp = await this.userModel.updateOne({
-              _id: id,
-            }, {
-              $set: {
-                  updated_at: date,
-                  roles: userRolesDto.roles,
-              },
-            });
+            let resp;
+            if ( type === 'user' ){
+                resp = await this.userModel.updateOne({
+                    _id: id,
+                }, {
+                    $set: {
+                        updated_at: date,
+                        roles: rolesDto.roles,
+                    },
+                });
+            } else if ( type === 'group' ){
+                resp = await this.groupModel.updateOne({
+                    _id: id,
+                }, {
+                    $set: {
+                        updated_at: date,
+                        roles: rolesDto.roles,
+                    },
+                });
+            }
             if ( resp.nModified === 0 ){
               throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
             } else {
-              let User = await this.userModel.findOne({ _id: id });
-              User = _.pick(User, ['_id', 'email', 'roles', 'created_at', 'updated_at']);
-              return User;
+                if ( type === 'user' ) {
+                    let user = await this.userModel.findOne({ _id: id });
+                    user = _.pick(user, ['_id', 'email', 'roles', 'created_at', 'updated_at']);
+                    return user;
+                } else if ( type === 'group' ) {
+                    const group = await this.groupModel.findOne({ _id: id });
+                    return group;
+                }
             }
         } catch (e) {
           if ( e.message.error === 'NOT_FOUND' ){

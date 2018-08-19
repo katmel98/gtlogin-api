@@ -1,3 +1,4 @@
+import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from 'auth/auth.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,12 +13,13 @@ import { ProductModule } from 'products/products.module';
   imports: [
               MongooseModule.forRoot('mongodb://localhost:27017/gtlogin'),
               AuthModule,
-              ProductModule,
               UsersModule,
-              PermissionsModule,
+              GroupsModule,
               RolesModule,
+              PermissionsModule,
               MessagesModule,
               SyslogsModule,
+              ProductModule,
             ],
   providers: [],
 })

@@ -12,7 +12,6 @@ import { User } from '../users/interfaces/user.interface'
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UserRolesDto } from './dto/user-roles.dto';
 
-
 @ApiUseTags('roles')
 @ApiBearerAuth()
 @Controller('roles')
@@ -98,26 +97,26 @@ export class RolesController {
     }
 
     // POST /roles/setRolesToUser/:id
-    @Post('setRolesToUser/:id')
-    @UseGuards(AuthGuard('bearer'))
-    @ApiOperation({ title: 'Set user roles'})
-    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
-    @ApiResponse({ status: 400, description: 'Bad Request.'})
-    @ApiResponse({ status: 401, description: 'Unauthorized.'})
-    @ApiResponse({ status: 403, description: 'Forbidden.'})
-    @ApiResponse({ status: 404, description: 'Not Found.'})
-    async addRoles(@Param('id') id: string, @Body() userRolesDto: UserRolesDto): Promise<User> {
-        try {
-            return this.rolesService.setRoles(id, userRolesDto);
-        } catch (e){
-            const message = e.message.message;
-            if ( e.message.error === 'NOT_FOUND'){
-                throw new NotFoundException(message);
-            } else if ( e.message.error === 'ID_NOT_VALID'){
-                throw new BadRequestException(message);
-            }
-        }
+    // @Post('setRolesToUser/:id')
+    // @UseGuards(AuthGuard('bearer'))
+    // @ApiOperation({ title: 'Set user roles'})
+    // @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    // @ApiResponse({ status: 400, description: 'Bad Request.'})
+    // @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    // @ApiResponse({ status: 403, description: 'Forbidden.'})
+    // @ApiResponse({ status: 404, description: 'Not Found.'})
+    // async addRoles(@Param('id') id: string, @Body() userRolesDto: UserRolesDto): Promise<User> {
+    //     try {
+    //         return this.rolesService.setRoles(id, userRolesDto);
+    //     } catch (e){
+    //         const message = e.message.message;
+    //         if ( e.message.error === 'NOT_FOUND'){
+    //             throw new NotFoundException(message);
+    //         } else if ( e.message.error === 'ID_NOT_VALID'){
+    //             throw new BadRequestException(message);
+    //         }
+    //     }
 
-    }
+    // }
 
 }

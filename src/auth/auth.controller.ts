@@ -1,4 +1,4 @@
-import { Controller, Post, HttpStatus, Response, Body, Param,
+import { Controller, Post, HttpStatus, Response, Body, Param, Request,
   UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards, NotFoundException, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'users/users.service';
@@ -29,7 +29,7 @@ export class AuthController {
 
     if (user) {
       if (await this.usersService.compareHash(body.password, user.password)) {
-        return res.status(HttpStatus.OK).json(await this.authService.createToken(user.id, user.email));
+        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email));
       }
     }
 
@@ -63,7 +63,7 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   async logout(@Req() request: Request): Promise<any> {
     // return `This action removes a #${id} user`;
-    const token = _.replace(request.headers.authorization, 'Bearer ', '');
+    const token = _.replace(request.headers['authorization'], 'Bearer ', '');
     try {
         return await this.usersService.removeToken(token);
     } catch (e){

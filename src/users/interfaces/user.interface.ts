@@ -3,7 +3,7 @@ import { Token } from './token.interface';
 
 
 export interface User extends Document {
-    readonly  id: string;
+    readonly  _id: string;
     readonly name: string;
     readonly surname: string;
     readonly lastname: string;
