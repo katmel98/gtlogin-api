@@ -11,6 +11,7 @@ import { Role } from './interfaces/role.interface';
 import { User } from '../users/interfaces/user.interface'
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UserRolesDto } from './dto/user-roles.dto';
+import { RolesDto } from './dto/roles.dto';
 
 @ApiUseTags('roles')
 @ApiBearerAuth()
@@ -97,26 +98,49 @@ export class RolesController {
     }
 
     // POST /roles/setRolesToUser/:id
-    // @Post('setRolesToUser/:id')
-    // @UseGuards(AuthGuard('bearer'))
-    // @ApiOperation({ title: 'Set user roles'})
-    // @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
-    // @ApiResponse({ status: 400, description: 'Bad Request.'})
-    // @ApiResponse({ status: 401, description: 'Unauthorized.'})
-    // @ApiResponse({ status: 403, description: 'Forbidden.'})
-    // @ApiResponse({ status: 404, description: 'Not Found.'})
-    // async addRoles(@Param('id') id: string, @Body() userRolesDto: UserRolesDto): Promise<User> {
-    //     try {
-    //         return this.rolesService.setRoles(id, userRolesDto);
-    //     } catch (e){
-    //         const message = e.message.message;
-    //         if ( e.message.error === 'NOT_FOUND'){
-    //             throw new NotFoundException(message);
-    //         } else if ( e.message.error === 'ID_NOT_VALID'){
-    //             throw new BadRequestException(message);
-    //         }
-    //     }
+    @Post('addRolesToUser/:id')
+    @UseGuards(AuthGuard('bearer'))
+    @ApiOperation({ title: 'Set user roles'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async addRolesToUser(@Param('id') id: string, @Body() rolesDto: RolesDto): Promise<any> {
+        try {
+            return this.rolesService.setRoles('user', id, rolesDto);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
 
-    // }
+    }
+
+    @Post('addRolesToGroup/:id')
+    @UseGuards(AuthGuard('bearer'))
+    @ApiOperation({ title: 'Set group roles'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async addRolesToGroup(@Param('id') id: string, @Body() rolesDto: RolesDto): Promise<any> {
+        try {
+            return this.rolesService.setRoles('group', id, rolesDto);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+
+    }
+
 
 }

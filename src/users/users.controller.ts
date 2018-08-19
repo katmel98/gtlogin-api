@@ -14,6 +14,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { RolesService } from '../roles/roles.service';
 import { RolesDto } from '../roles/dto/roles.dto';
+import { GroupsService } from '../groups/groups.service';
+import { GroupsDto } from '../groups/dto/groups.dto';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
@@ -21,7 +23,8 @@ import { RolesDto } from '../roles/dto/roles.dto';
 export class UsersController {
 
     constructor(private readonly usersService: UsersService,
-                private readonly rolesService: RolesService){}
+                private readonly rolesService: RolesService,
+                private readonly groupsService: GroupsService){}
 
     // GET /users
     @Get()
@@ -234,6 +237,30 @@ export class UsersController {
             }
         }
     }
+
+    // POST /users/:id/setGroups
+    @Post(':id/setGroups')
+    @UseGuards(AuthGuard('bearer'))
+    @ApiOperation({ title: 'Set user groups'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async addGroups(@Param('id') id: string, @Body() groupsDto: GroupsDto): Promise<User> {
+        try {
+            return this.groupsService.setGroups(id, groupsDto);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+
+    }
+    
 
     // POST /users/:id/setRoles
     @Post(':id/setRoles')

@@ -33,6 +33,7 @@ export const UserSchema = new mongoose.Schema({
     },
   }],
   roles: [],
+  groups: [],
   created_at: {
     type: Number,
     default: null,

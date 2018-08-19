@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Post, Body, Delete,
     UnprocessableEntityException, BadRequestException, InternalServerErrorException,
-    NotFoundException} from '@nestjs/common';
+    NotFoundException,
+    UseGuards} from '@nestjs/common';
 import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { Group } from './interfaces/group.interface';
@@ -10,6 +11,8 @@ import { RolesDto } from '../roles/dto/roles.dto';
 
 import { RolesService } from '../roles/roles.service';
 import { GroupsService } from './groups.service';
+import { AuthGuard } from '@nestjs/passport';
+import { GroupsDto } from './dto/groups.dto';
 
 @ApiUseTags('groups')
 @ApiBearerAuth()
@@ -20,7 +23,7 @@ constructor(private readonly groupsService: GroupsService,
             private readonly rolesService: RolesService){}
 
 @Get()
-// @UseGuards(AuthGuard('bearer'))
+@UseGuards(AuthGuard('bearer'))
 @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
 @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
 @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -31,7 +34,7 @@ async findAll(): Promise<Group[]> {
 }
 
 @Get(':id')
-// @UseGuards(AuthGuard('bearer'))
+@UseGuards(AuthGuard('bearer'))
 @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
 @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
 @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -51,7 +54,7 @@ async findOne(@Param('id') id: string): Promise<Group> {
 }
 
 @Post()
-// @UseGuards(AuthGuard('bearer'))
+@UseGuards(AuthGuard('bearer'))
 @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
 @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
 @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -75,7 +78,7 @@ async create(@Body() createGroupDto: CreateGroupDto) {
 }
 
 @Delete(':id')
-// @UseGuards(AuthGuard('bearer'))
+@UseGuards(AuthGuard('bearer'))
 @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
 @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
 @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -96,9 +99,32 @@ async remove(@Param('id') id: string): Promise<Group> {
    }
 }
 
-    // POST /roles/setRoles/:id
-    @Post('setRoles/:id')
-    // @UseGuards(AuthGuard('bearer'))
+    // POST /groups/:id/setGroups
+    @Post(':id/setGroups')
+    @UseGuards(AuthGuard('bearer'))
+    @ApiOperation({ title: 'Set group roles'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async addGroups(@Param('id') id: string, @Body() groupsDto: GroupsDto): Promise<Group> {
+        try {
+            return this.groupsService.setGroups(id, groupsDto);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+
+    }
+
+    // POST /groups/:id/setRoles
+    @Post(':id/setRoles')
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Set group roles'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})

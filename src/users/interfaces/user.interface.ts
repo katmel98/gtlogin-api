@@ -11,6 +11,7 @@ export interface User extends Document {
     readonly email: string;
     readonly tokens: Token[];
     readonly roles: string[];
+    readonly groups: string[];
     readonly created_at: number;
     readonly updated_at: number;
 }
