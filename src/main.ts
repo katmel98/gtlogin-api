@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from 'app.module';
+import { logger } from 'common/middlewares/logger.middleware';
 
 async function bootstrap() {
   const instance = express();
@@ -13,6 +14,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
 
   const app = await NestFactory.create(AppModule, instance);
+  app.use(logger);
 
   const options = new DocumentBuilder()
     .setTitle('GTLogin API')

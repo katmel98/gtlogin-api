@@ -34,6 +34,22 @@ export const UserSchema = new mongoose.Schema({
   }],
   roles: [],
   groups: [],
+  email_verified: {
+    type: Boolean,
+    default: false,
+  },
+  logged_in: {
+    type: Boolean,
+    default: false,
+  },
+  last_login: {
+    type: Number,
+    default: null,
+  },
+  last_logout: {
+    type: Number,
+    default: null,
+  },
   created_at: {
     type: Number,
     default: null,

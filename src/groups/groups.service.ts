@@ -89,7 +89,7 @@ export class GroupsService {
     }
 
     // SET USER Groups
-    async setGroups(id: string, groupsDto: GroupsDto): Promise<User> {
+    async setGroups(id: string, groupsDto: GroupsDto): Promise<any> {
         if ( !ObjectID.isValid(id) ){
             throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
         }

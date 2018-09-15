@@ -108,7 +108,7 @@ async remove(@Param('id') id: string): Promise<Group> {
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
     @ApiResponse({ status: 403, description: 'Forbidden.'})
     @ApiResponse({ status: 404, description: 'Not Found.'})
-    async addGroups(@Param('id') id: string, @Body() groupsDto: GroupsDto): Promise<Group> {
+    async addGroups(@Param('id') id: string, @Body() groupsDto: GroupsDto): Promise<any> {
         try {
             return this.groupsService.setGroups(id, groupsDto);
         } catch (e){
