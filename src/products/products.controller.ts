@@ -6,15 +6,18 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ApiOperation, ApiResponse, ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('products')
 @ApiBearerAuth()
 @Controller('products')
+@UseGuards(RolesGuard)
 export class ProductsController {
     constructor(private productService: ProductsService) {}
 
     @Get()
-    @UseGuards(AuthGuard('jwt'))
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth()
     getProducts(): Promise<Product[]> {
       return this.productService.findAll();
     }
