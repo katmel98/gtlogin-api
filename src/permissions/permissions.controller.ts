@@ -1,14 +1,25 @@
-import { Controller, Get, Query, Param, Post, Body, Put, Delete } from '@nestjs/common';
-import { ApiUseTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Query, Param, Post, Body, Put, Delete, UseGuards } from '@nestjs/common';
+import { ApiUseTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { PermissionsService } from './permissions.service';
+import { Permission } from './interfaces/permission.interface';
 
 @ApiUseTags('permissions')
+@ApiBearerAuth()
 @Controller('permissions')
 export class PermissionsController {
 
+    constructor(private readonly permissionsService: PermissionsService){}
+
     @Get()
+    @UseGuards(AuthGuard('bearer'))
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
-    findAll(@Query() query) {
-      return `This action returns all roles (limit: ${query.limit} permissions)`;
+    @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async findAll(): Promise<Permission[]> {
+        return this.permissionsService.findAll();
     }
 
     @Get(':id')

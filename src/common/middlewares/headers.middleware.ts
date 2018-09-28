@@ -32,12 +32,9 @@ export class HeaderMiddleware implements NestMiddleware {
 
         const user = _.pick(result, ['_id', 'email', 'roles', 'last_login']);
 
-        console.log("USER 2 ...");
-        console.log(user);
         req.headers['user'] = user;
         // console.log(req.headers.user);
         next();
-
     };
   }
 }

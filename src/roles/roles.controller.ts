@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, Body, Delete,
          UnprocessableEntityException, BadRequestException, InternalServerErrorException,
-         UseGuards, 
+         UseGuards,
          NotFoundException} from '@nestjs/common';
 
 import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -8,9 +8,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { RolesService } from './roles.service';
 import { Role } from './interfaces/role.interface';
-import { User } from '../users/interfaces/user.interface'
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UserRolesDto } from './dto/user-roles.dto';
 import { RolesDto } from './dto/roles.dto';
 
 @ApiUseTags('roles')
