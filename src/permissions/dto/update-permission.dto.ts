@@ -1,4 +1,6 @@
+import { RulesDto } from './rules.dto';
 import { ApiModelProperty } from '@nestjs/swagger';
+import * as ArrayList from 'arraylist';
 
 export class UpdatePermissionDto {
 
@@ -9,7 +11,7 @@ export class UpdatePermissionDto {
     readonly descrip: string;
 
     @ApiModelProperty()
-    readonly rules: Array<any>;
+    readonly rules: ArrayList<any>;
 
     @ApiModelProperty()
     updated_at: number;

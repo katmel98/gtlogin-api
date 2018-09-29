@@ -1,14 +1,10 @@
+import { RuleDto } from './rule.dto';
 import { ApiModelProperty } from '@nestjs/swagger';
+import * as ArrayList from 'arraylist';
 
 export class RulesDto {
 
     @ApiModelProperty()
-    readonly resource: string;
-
-    @ApiModelProperty()
-    readonly effect: string;
-
-    @ApiModelProperty()
-    readonly method: string;
+    readonly rules: ArrayList<RuleDto>;
 
 }
