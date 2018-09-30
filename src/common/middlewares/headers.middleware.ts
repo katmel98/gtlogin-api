@@ -16,7 +16,7 @@ export class HeaderMiddleware implements NestMiddleware {
         const token = _.replace(req.headers['authorization'], 'bearer ', '');
 
         try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET);
+            decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
         } catch (e) {
             // return new Promise((resolve, reject) => {
             //     reject();

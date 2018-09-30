@@ -84,7 +84,7 @@ export class UsersService {
     let decoded;
 
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
     } catch (e) {
         // return new Promise((resolve, reject) => {
         //     reject();
@@ -161,7 +161,7 @@ export class UsersService {
       const date = moment().valueOf();
       let decoded;
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
       } catch (e) {
           // return new Promise((resolve, reject) => {
           //     reject();

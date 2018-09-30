@@ -31,6 +31,18 @@ export const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    expires_in: {
+      type: Number,
+      required: false,
+    },
+    created_at: {
+      type: Number,
+      required: false,
+    },
+    expires_at: {
+      type: Number,
+      required: false,
+    },
   }],
   roles: [],
   groups: [],
@@ -64,7 +76,7 @@ export const UserSchema = new mongoose.Schema({
 UserSchema.methods.generateAuthToken = function() {
   const user = this;
   const access = 'auth';
-  const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+  const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_TOKEN_SECRET).toString();
 
   user.tokens.push({access, token}); // this sometimes not work in some mongodb versions
   // user.tokens = user.token.concat([{access, token}]);
