@@ -24,10 +24,12 @@ export class AuthService {
     let access = 'auth';
     let token = jwt.sign({user, access}, secretOrKey, { expiresIn: expires_in });
     const User = await this.userService.getUserByEmail(user.email);
+    _.remove(User.tokens, item => item.access === 'auth'); // REMOVING ACCESS AUTH TOKEN FROM USER
     tokens.push({access, token, expires_in, created_at, expires_at});
 
     // EVALUATE REFRESH TOKEN DEFINITION IS NECCESSARY
     const existingRefreshToken = (_.find(User.tokens, (obj) => obj.access === 'refresh' ));
+    _.remove(User.tokens, item => item.access === 'refresh'); // REMOVING ACCESS REFRESH TOKEN FROM USER
     if (existingRefreshToken) {
       if (created_at < existingRefreshToken.expires_at){
         build = false;
