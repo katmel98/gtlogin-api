@@ -7,6 +7,7 @@ import { ApiOperation, ApiResponse, ApiUseTags, ApiBearerAuth } from '@nestjs/sw
 import { CreateUserDto } from 'users/dto/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as _ from 'lodash';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @ApiUseTags('auth')
 @ApiBearerAuth()
@@ -96,5 +97,27 @@ export class AuthController {
         }
     }
   }
+
+  @Post('token')
+  @UseGuards(AuthGuard('bearer'))
+  @ApiOperation({ title: 'Refresh access token if refresh token exists for an user.'})
+  @ApiResponse({ status: 200, description: 'The token was generated.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  async generateToken(@Response() res: any, @Body() body: RefreshTokenDto): Promise<any> {
+    if (!(body && body.email && body.refreshToken)) {
+      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username and refresh token are required!' });
+    }
+
+    const user = await this.usersService.getUserByEmail(body.email);
+
+    if (user) {
+        res.set('user', user);
+        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email));
+    }
+
+    return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username or password wrong!' });
+  }
+
 
 }
