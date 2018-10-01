@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 // import _ from 'lodash';
 import * as bcrypt from 'bcryptjs';
 import * as moment from 'moment';
+import { TokenSchema } from './token.schema';
 
 export const UserSchema = new mongoose.Schema({
   name: String,
@@ -22,28 +23,7 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  tokens: [{
-    access: {
-        type: String,
-        required: false,
-    },
-    token: {
-        type: String,
-        required: false,
-    },
-    expires_in: {
-      type: Number,
-      required: false,
-    },
-    created_at: {
-      type: Number,
-      required: false,
-    },
-    expires_at: {
-      type: Number,
-      required: false,
-    },
-  }],
+  tokens: [TokenSchema],
   roles: [],
   groups: [],
   email_verified: {

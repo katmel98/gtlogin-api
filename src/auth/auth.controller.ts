@@ -100,7 +100,7 @@ export class AuthController {
 
   @Post('token')
   @UseGuards(AuthGuard('bearer'))
-  @ApiOperation({ title: 'Refresh access token if refresh token exists for an user.'})
+  @ApiOperation({ title: 'Renew access token if refresh token exists for an user.'})
   @ApiResponse({ status: 200, description: 'The token was generated.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})

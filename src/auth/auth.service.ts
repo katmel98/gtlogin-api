@@ -17,19 +17,17 @@ export class AuthService {
     let build;
 
     // ACCESS TOKEN DEFINITION
-    let expires_in = process.env.TOKEN_LIFE;
-    let expires_at = created_at + +expires_in;
+    let expires_in = +process.env.TOKEN_LIFE;
+    let expires_at = created_at + expires_in;
     let secretOrKey = process.env.JWT_TOKEN_SECRET;
     const user = { email };
     let access = 'auth';
     let token = jwt.sign({user, access}, secretOrKey, { expiresIn: expires_in });
     const User = await this.userService.getUserByEmail(user.email);
-    _.remove(User.tokens, item => item.access === 'auth'); // REMOVING ACCESS AUTH TOKEN FROM USER
     tokens.push({access, token, expires_in, created_at, expires_at});
 
     // EVALUATE REFRESH TOKEN DEFINITION IS NECCESSARY
     const existingRefreshToken = (_.find(User.tokens, (obj) => obj.access === 'refresh' ));
-    _.remove(User.tokens, item => item.access === 'refresh'); // REMOVING ACCESS REFRESH TOKEN FROM USER
     if (existingRefreshToken) {
       if (created_at < existingRefreshToken.expires_at){
         build = false;
@@ -42,7 +40,7 @@ export class AuthService {
 
     if (build) {
     // REFRESH TOKEN DEFINITION
-      expires_in = process.env.REFRESH_TOKEN_LIFE;
+      expires_in = +process.env.REFRESH_TOKEN_LIFE;
       expires_at = created_at + +expires_in;
       access = 'refresh';
       secretOrKey = process.env.JWT_REFRESH_TOKEN_SECRET;
@@ -53,6 +51,7 @@ export class AuthService {
     }
 
     tokens.forEach( (item) => {
+      _.remove(User.tokens, item2 => item2.access === item.access);
       User.tokens.push(item);
     });
 
@@ -66,6 +65,7 @@ export class AuthService {
   }
 
   async validateUserByToken(token: string): Promise<any> {
+    console.log('VALIDANDO EL TOKEN DEL USUARIO CON EL TOKEN: ', token);
     return await this.userService.getUserByToken(token);
   }
 

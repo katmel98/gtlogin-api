@@ -82,14 +82,12 @@ export class UsersService {
   // FIND BY TOKEN
   async getUserByToken(token: string): Promise<User> {
     let decoded;
-
     try {
         decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
     } catch (e) {
         // return new Promise((resolve, reject) => {
         //     reject();
         // });
-
         return Promise.reject();
     }
     const user = await this.userModel.findOne({
@@ -97,6 +95,7 @@ export class UsersService {
       'tokens.access': 'auth',
       'tokens.token': token,
     });
+
     return user;
 
   }
