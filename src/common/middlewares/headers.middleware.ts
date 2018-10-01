@@ -76,8 +76,18 @@ export class HeaderMiddleware implements NestMiddleware {
         if (generate_auth_token) {
             if (refresh_token) {
                 console.log('EL REFRESH_TOKEN EXISTE');
-                if (user) {
-                    return res.status(HttpStatus.OK).json(await this.authService.createToken(user._id, user.email));
+                if (now > refresh_token.expires_at) {
+                    console.log('*** EL TOKEN YA HA EXPIRADO ***');
+                    const error = {
+                        statusCode: '401',
+                        error: 'FORBIDDEN',
+                        message: 'It\'s neccesary to login in order to continue.',
+                    };
+                    return res.status(HttpStatus.FORBIDDEN).json(error);
+                } else {
+                    if (user) {
+                        return res.status(HttpStatus.OK).json(await this.authService.createToken(user._id, user.email));
+                    }
                 }
             } else {
                 const error = {
