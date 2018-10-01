@@ -88,6 +88,8 @@ export class UsersService {
         // return new Promise((resolve, reject) => {
         //     reject();
         // });
+        console.log('SE HA GENERADO UN ERROR ...');
+        console.log(e);
         return Promise.reject();
     }
     const user = await this.userModel.findOne({
@@ -155,17 +157,13 @@ export class UsersService {
 
   // DELETE TOKEN FROM USER
   async removeToken(token: string): Promise<any> {
-    console.log(token)
     try {
-      const date = moment().valueOf();
       let decoded;
       try {
         decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
       } catch (e) {
-          // return new Promise((resolve, reject) => {
-          //     reject();
-          // });
-          console.log(e)
+          console.log('ERROR DE REMOVE_CLEAR TOKEN EN EL USERSERVICE');
+          console.log(e);
           return Promise.reject();
       }
       const resp = await this.userModel.update({

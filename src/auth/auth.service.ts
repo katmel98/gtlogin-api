@@ -12,13 +12,14 @@ export class AuthService {
 
   async createToken(id: string, email: string) {
 
-    const created_at = moment().valueOf();
+    const now = moment().valueOf();
+    const created_at = now;
     const tokens = [];
     let build;
 
     // ACCESS TOKEN DEFINITION
-    let expires_in = +process.env.TOKEN_LIFE;
-    let expires_at = created_at + expires_in;
+    let expires_in = +process.env.TOKEN_LIFE * 1000; // Tiempo programado como segundos a milisegundos
+    let expires_at = now + expires_in;
     let secretOrKey = process.env.JWT_TOKEN_SECRET;
     const user = { email };
     let access = 'auth';
@@ -28,20 +29,27 @@ export class AuthService {
 
     // EVALUATE REFRESH TOKEN DEFINITION IS NECCESSARY
     const existingRefreshToken = (_.find(User.tokens, (obj) => obj.access === 'refresh' ));
+
+    console.log(existingRefreshToken);
+
     if (existingRefreshToken) {
+      console.log('EL REFRESH TOKEN SI EXISTE');
       if (created_at < existingRefreshToken.expires_at){
+        console.log('TODAVIA FALTA PARA QUE EXPIRE EL TOKEN');
         build = false;
       } else {
+        console.log('HA EXPIRADO EL TOKEN');
         build = true;
       }
     }else{
+      console.log('EL REFRESH TOKEN NO EXISTE');
       build = true;
     }
 
     if (build) {
     // REFRESH TOKEN DEFINITION
-      expires_in = +process.env.REFRESH_TOKEN_LIFE;
-      expires_at = created_at + +expires_in;
+      expires_in = +process.env.REFRESH_TOKEN_LIFE * 1000; // Tiempo programado como segundos a milisegundos
+      expires_at = now + +expires_in;
       access = 'refresh';
       secretOrKey = process.env.JWT_REFRESH_TOKEN_SECRET;
       token = jwt.sign({user, access}, secretOrKey, { expiresIn: expires_in });
@@ -55,6 +63,8 @@ export class AuthService {
       User.tokens.push(item);
     });
 
+    User.logged_in = true;
+    User.last_login = now;
     await this.userService.update(User._id, User);
 
     return { tokens };
@@ -65,8 +75,26 @@ export class AuthService {
   }
 
   async validateUserByToken(token: string): Promise<any> {
-    console.log('VALIDANDO EL TOKEN DEL USUARIO CON EL TOKEN: ', token);
     return await this.userService.getUserByToken(token);
+  }
+
+  async removeToken(token: string): Promise<any> {
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET);
+    } catch (e) {
+        // return new Promise((resolve, reject) => {
+        //     reject();
+        // });
+        console.log(e);
+        return Promise.reject();
+    }
+    const User = await this.userService.getUserByEmail(decoded.user.email);
+    _.remove(User.tokens, item => item.token === token);
+
+    await this.userService.update(User._id, User);
+
+    return { User };
   }
 
 }

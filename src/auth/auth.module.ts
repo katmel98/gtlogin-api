@@ -14,6 +14,7 @@ import { HttpStrategy } from './passport/http.strategy';
   imports: [UsersModule],
   providers: [AuthService, HttpStrategy],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

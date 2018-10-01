@@ -8,6 +8,7 @@ import { CreateUserDto } from 'users/dto/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as _ from 'lodash';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RejectTokenDto } from './dto/reject-token.dto';
 
 @ApiUseTags('auth')
 @ApiBearerAuth()
@@ -65,10 +66,10 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   async logout(@Req() request: Request): Promise<any> {
     // return `This action removes a #${id} user`;
-    const token = _.replace(request.headers['authorization'], 'Bearer ', '');
+    const token = _.replace(request.headers['authorization'], 'bearer ', '');
     try {
         return await this.usersService.removeToken(token);
-    } catch (e){
+    } catch (e) {
         const message = e.message;
         if ( e.message.error === 'NOT_FOUND'){
             throw new NotFoundException(message);
@@ -119,5 +120,24 @@ export class AuthController {
     return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username or password wrong!' });
   }
 
+  @Post('token/reject')
+  @UseGuards(AuthGuard('bearer'))
+  @ApiOperation({ title: 'Reject refresh token.'})
+  @ApiResponse({ status: 204, description: 'The token was generated.'})
+  @ApiResponse({ status: 401, description: 'Unauthorized.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  async rejectToken(@Response() res: any, @Body() body: RejectTokenDto): Promise<any> {
+    if (!(body && body.token)) {
+      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Token is required!' });
+    }
+    console.log('VALIDANDO REJECT_TOKEN');
+
+    const user = await this.authService.removeToken(body.token);
+
+    console.log('FOUND');
+    console.log(user);
+
+    return res.status(HttpStatus.FORBIDDEN).json({ message: 'Token wrong!' });
+  }
 
 }
