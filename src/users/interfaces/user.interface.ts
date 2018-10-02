@@ -14,7 +14,7 @@ export interface User extends Document {
     readonly email_verified: boolean;
     logged_in: boolean;
     last_login: number;
-    readonly last_logout: number;
+    last_logout: number;
     readonly created_at: number;
     readonly updated_at: number;
 }

@@ -1,7 +1,8 @@
 import { Controller, Get, Param, Post, Body, Delete,
          UnprocessableEntityException, BadRequestException, InternalServerErrorException,
          UseGuards,
-         NotFoundException} from '@nestjs/common';
+         NotFoundException,
+         ReflectMetadata} from '@nestjs/common';
 
 import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -10,16 +11,19 @@ import { RolesService } from './roles.service';
 import { Role } from './interfaces/role.interface';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RolesDto } from './dto/roles.dto';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('roles')
 @ApiBearerAuth()
 @Controller('roles')
+@UseGuards(RolesGuard)
 export class RolesController {
 
     constructor(private readonly rolesService: RolesService){}
 
     @Get()
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'roles', method: 'query' })
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})

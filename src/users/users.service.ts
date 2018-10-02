@@ -159,6 +159,7 @@ export class UsersService {
   async removeToken(token: string): Promise<any> {
     try {
       let decoded;
+      let User;
       try {
         decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
       } catch (e) {
@@ -174,8 +175,12 @@ export class UsersService {
       if ( resp.nModified === 0 ){
         throw new HttpException({ error: 'NOT_FOUND', message: `TOKEN ${token} not found`, status: HttpStatus.NOT_FOUND}, 404);
       } else {
-        // let User = await this.userModel.findOne({ email: decoded.user.email });
-        // User = _.pick(User, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
+        User = await this.userModel.findOne({ email: decoded.user.email });
+        User.logged_in = false;
+        User.last_logout = moment().valueOf();
+
+        await this.update(User._id, User);
+
         const response = {statusCode: 200, message: `Token removed from user ${decoded.user.email}.`};
         return response;
       }

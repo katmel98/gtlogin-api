@@ -16,6 +16,7 @@ export class AuthService {
     const created_at = now;
     const tokens = [];
     let build;
+    const debug = process.env.DEBUG;
 
     // ACCESS TOKEN DEFINITION
     let expires_in = +process.env.TOKEN_LIFE * 1000; // Tiempo programado como segundos a milisegundos
@@ -30,19 +31,17 @@ export class AuthService {
     // EVALUATE REFRESH TOKEN DEFINITION IS NECCESSARY
     const existingRefreshToken = (_.find(User.tokens, (obj) => obj.access === 'refresh' ));
 
-    console.log(existingRefreshToken);
-
     if (existingRefreshToken) {
-      console.log('EL REFRESH TOKEN SI EXISTE');
+      if (debug) console.log('EL REFRESH TOKEN SI EXISTE');
       if (created_at < existingRefreshToken.expires_at){
-        console.log('TODAVIA FALTA PARA QUE EXPIRE EL TOKEN');
+        if (debug) console.log('TODAVIA FALTA PARA QUE EXPIRE EL TOKEN');
         build = false;
       } else {
-        console.log('HA EXPIRADO EL TOKEN');
+        if (debug) console.log('HA EXPIRADO EL TOKEN');
         build = true;
       }
     }else{
-      console.log('EL REFRESH TOKEN NO EXISTE');
+      if (debug) console.log('EL REFRESH TOKEN NO EXISTE');
       build = true;
     }
 

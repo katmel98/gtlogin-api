@@ -18,7 +18,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, instance);
 
   app.use(compression());
-  app.use(logger);
+  // app.use(logger);
 
   const descrip = 'GTLogin API represents the GeddeonTech effort for create a simple but really functional REST API ' +
                   'that allow to control authentication and autorization in a role based manner.';

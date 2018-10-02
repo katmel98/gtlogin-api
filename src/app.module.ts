@@ -9,6 +9,7 @@ import { MessagesModule } from 'messages/messages.module';
 import { SyslogsModule } from 'syslogs/syslogs.module';
 import { ProductModule } from 'products/products.module';
 import { HeaderMiddleware } from 'common/middlewares/headers.middleware';
+import { logger } from 'common/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -27,7 +28,10 @@ import { HeaderMiddleware } from 'common/middlewares/headers.middleware';
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(HeaderMiddleware)
+    .apply(logger)
+    .with('ApplicationModule')
+    .forRoutes( { path: '*', method: RequestMethod.ALL } )
+    .apply(HeaderMiddleware)
       .with('ApplicationModule')
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST},
@@ -39,6 +43,7 @@ export class AppModule implements NestModule{
         { path: 'groups', method: RequestMethod.ALL },
         { path: 'roles', method: RequestMethod.ALL },
         { path: 'permissions', method: RequestMethod.ALL },
+        { path: 'products', method: RequestMethod.ALL },
       );
   }
 }

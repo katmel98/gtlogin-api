@@ -1,6 +1,6 @@
 import { Controller, Param, Get, Post, Body,
          UnprocessableEntityException, BadRequestException,
-         InternalServerErrorException, UseGuards } from '@nestjs/common';
+         InternalServerErrorException, UseGuards, ReflectMetadata } from '@nestjs/common';
 import { Product } from './interfaces/product.interface';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -16,6 +16,7 @@ export class ProductsController {
     constructor(private productService: ProductsService) {}
 
     @Get()
+    @ReflectMetadata('data', { resource: 'products', method: 'query' })
     // @UseGuards(AuthGuard('jwt'))
     @ApiBearerAuth()
     getProducts(): Promise<Product[]> {
@@ -29,6 +30,7 @@ export class ProductsController {
     }
 
     @Post()
+    @ReflectMetadata('data', { resource: 'products', method: 'create' })
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})

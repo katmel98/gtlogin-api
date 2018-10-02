@@ -13,10 +13,12 @@ import { RolesService } from '../roles/roles.service';
 import { GroupsService } from './groups.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GroupsDto } from './dto/groups.dto';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('groups')
 @ApiBearerAuth()
 @Controller('groups')
+@UseGuards(RolesGuard)
 export class GroupsController {
 
 constructor(private readonly groupsService: GroupsService,

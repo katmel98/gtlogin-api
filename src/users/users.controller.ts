@@ -16,10 +16,12 @@ import { RolesService } from '../roles/roles.service';
 import { RolesDto } from '../roles/dto/roles.dto';
 import { GroupsService } from '../groups/groups.service';
 import { GroupsDto } from '../groups/dto/groups.dto';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
 @Controller('users')
+@UseGuards(RolesGuard)
 export class UsersController {
 
     constructor(private readonly usersService: UsersService,
