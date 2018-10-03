@@ -1,7 +1,7 @@
 import { Controller, Get, Request,
          Param, Post, Put, Body, Delete, InternalServerErrorException,
          UnprocessableEntityException, BadRequestException,
-         NotFoundException, UseGuards, Req,
+         NotFoundException, UseGuards, Req, ReflectMetadata,
          } from '@nestjs/common';
 
 import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -31,6 +31,7 @@ export class UsersController {
     // GET /users
     @Get()
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'query' })
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -44,6 +45,7 @@ export class UsersController {
     // GET /users/:id
     @Get(':id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'queryById' })
     @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -67,6 +69,7 @@ export class UsersController {
     // POST /users
     @Post()
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'create' })
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -92,6 +95,7 @@ export class UsersController {
     // PUT /users/:id
     @Put(':id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'update' })
     @ApiOperation({ title: 'Put a model instance and persist it into the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -115,6 +119,7 @@ export class UsersController {
     // DELETE /users/:id
     @Delete(':id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'delete' })
     @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -138,6 +143,7 @@ export class UsersController {
     // GET /users/me
     @Get('/me/info')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'info' })
     @ApiOperation({ title: 'Obtains self user data'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -176,6 +182,7 @@ export class UsersController {
     // DELETE /users/me/:token
     @Delete('/me/:token')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'deleteToken' })
     @ApiOperation({ title: 'Delete a model instance\'s token by {{token}} from user.'})
     @ApiResponse({ status: 200, description: 'The token has been successfully removed.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -199,6 +206,7 @@ export class UsersController {
     // GET /users/getUserByEmail/:email
     @Get('/getUserByEmail/:email')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'queryByEmail' })
     @ApiOperation({ title: 'Find a model instance by {{email}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -221,6 +229,7 @@ export class UsersController {
     // GET /users/getUserByToken/:token
     @Get('/getUserByToken/:token')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'queryByToken' })
     @ApiOperation({ title: 'Find a model instance by {{token}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -243,6 +252,7 @@ export class UsersController {
     // POST /users/:id/setGroups
     @Post(':id/setGroups')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'update' })
     @ApiOperation({ title: 'Set user groups'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -262,11 +272,11 @@ export class UsersController {
         }
 
     }
-    
 
     // POST /users/:id/setRoles
     @Post(':id/setRoles')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'update' })
     @ApiOperation({ title: 'Set user roles'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})

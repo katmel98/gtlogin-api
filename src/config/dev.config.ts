@@ -12,7 +12,7 @@ export let config = {
         PORT: 3000,
         MONGODB_URI: 'mongodb://localhost:27017/TodoApp',
         JWT_TOKEN_SECRET: 'popofjpfknelqwkfn392u095320lk3rl1bndwjbakjcasjbaf2e912434lj3b2',
-        TOKEN_LIFE: 300,
+        TOKEN_LIFE: 3600,
         JWT_REFRESH_TOKEN_SECRET: 'opkpokklwmflkweiwejpw3km4ñkmknn4eiq323r2364509098dfffbs',
         REFRESH_TOKEN_LIFE: 86400,
         DEBUG: true,

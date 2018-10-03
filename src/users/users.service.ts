@@ -14,11 +14,15 @@ import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from '../roles/dto/roles.dto';
+import { Role } from 'roles/interfaces/role.interface';
+import { Permission } from 'permissions/interfaces/permission.interface';
 
 @Injectable()
 export class UsersService {
   saltRounds: any;
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<User>,
+              @InjectModel('Role') private readonly roleModel: Model<Role>,
+              @InjectModel('Permission') private readonly permissionModel: Model<Permission>) {}
 
   getUserModel() {
     return this.userModel;
@@ -243,6 +247,40 @@ export class UsersService {
       }
       return false;
     } );
+  }
+
+  async findUserPermissionsById(id: string): Promise<any> {
+    const user = await this.userModel.findOne({ _id: id });
+
+    const roles = user.roles;
+    let user_permissions = [];
+    for ( const value of roles ) {
+      // SE RECORREN LOS POSIBLES ROLES DEL USUARIO
+      const name = value;
+      let result = await this.roleModel.findOne({ name });
+      result = _.pick(result, ['_id', 'permissions']);
+      const search_permissions = result.permissions;
+      for ( const item of search_permissions ) {
+        // SE RECORREN LOS IDS DE PERMISOS
+        let result_permission = await this.permissionModel.findOne({ _id: item });
+        result_permission = _.pick(result_permission, ['_id', 'rules']);
+        for (const element of result_permission.rules){
+          // SE RECORREN LOS ARRAYS DE REGLAS DE LOS PERMISOS Y SE ESCOGEN SOLO LOS QUE TENGAN EFFECT = 'ALLOW'
+          if ( element.effect === 'allow' ) {
+            const object = {
+              resource: element.resource,
+              method: element.method,
+              id: element._id.toString(),
+            };
+            user_permissions.push(object);
+          }
+        }
+      }
+    }
+
+    user_permissions = _.uniqBy(user_permissions, 'id');
+
+    return user_permissions;
   }
 
 }

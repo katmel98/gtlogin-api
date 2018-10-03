@@ -1,7 +1,8 @@
 import { Controller, Get, Param, Post, Body, Delete,
     UnprocessableEntityException, BadRequestException, InternalServerErrorException,
     NotFoundException,
-    UseGuards} from '@nestjs/common';
+    UseGuards,
+    ReflectMetadata} from '@nestjs/common';
 import { ApiUseTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { Group } from './interfaces/group.interface';
@@ -26,6 +27,7 @@ constructor(private readonly groupsService: GroupsService,
 
 @Get()
 @UseGuards(AuthGuard('bearer'))
+@ReflectMetadata('data', { resource: 'groups', method: 'query' })
 @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
 @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
 @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -37,6 +39,7 @@ async findAll(): Promise<Group[]> {
 
 @Get(':id')
 @UseGuards(AuthGuard('bearer'))
+@ReflectMetadata('data', { resource: 'groups', method: 'queryById' })
 @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
 @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
 @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -57,6 +60,7 @@ async findOne(@Param('id') id: string): Promise<Group> {
 
 @Post()
 @UseGuards(AuthGuard('bearer'))
+@ReflectMetadata('data', { resource: 'groups', method: 'create' })
 @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
 @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
 @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -81,6 +85,7 @@ async create(@Body() createGroupDto: CreateGroupDto) {
 
 @Delete(':id')
 @UseGuards(AuthGuard('bearer'))
+@ReflectMetadata('data', { resource: 'groups', method: 'delete' })
 @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
 @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
 @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -104,6 +109,7 @@ async remove(@Param('id') id: string): Promise<Group> {
     // POST /groups/:id/setGroups
     @Post(':id/setGroups')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'groups', method: 'update' })
     @ApiOperation({ title: 'Set group roles'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -127,6 +133,7 @@ async remove(@Param('id') id: string): Promise<Group> {
     // POST /groups/:id/setRoles
     @Post(':id/setRoles')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'groups', method: 'update' })
     @ApiOperation({ title: 'Set group roles'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})

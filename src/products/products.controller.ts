@@ -25,6 +25,7 @@ export class ProductsController {
 
     @Get(':name')
     // @UseGuards(AuthGuard('jwt'))
+    @ReflectMetadata('data', { resource: 'products', method: 'queryByName' })
     getProductByName(@Param('name') name: string): Promise<Product> {
       return this.productService.findByName(name);
     }

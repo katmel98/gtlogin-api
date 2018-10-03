@@ -7,11 +7,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'users/interfaces/user.interface';
 import { Model } from 'mongoose';
 import { AuthService } from './../../auth/auth.service';
+import { UsersService } from 'users/users.service';
 
 @Injectable()
 export class HeaderMiddleware implements NestMiddleware {
 
-  constructor(@InjectModel('User') private readonly userModel: Model<User>, private authService: AuthService) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<User>,
+              private authService: AuthService,
+              private usersService: UsersService) {}
 
   async resolve(): Promise<MiddlewareFunction>  {
     return async (req, res, next) => {
@@ -147,16 +150,20 @@ export class HeaderMiddleware implements NestMiddleware {
         //     {resource: 'users', method: '*'},
         // ];
 
-        user['permissions'] = [
-            {resource: 'products', method: '*' },
-        ];
+        await this.usersService.findUserPermissionsById(user._id)
+            .then( ( item ) => {
+                console.log('*** PERMISSIONS ***');
+                console.log(item);
+                user['permissions'] = item;
+                req.headers.user = user;
+                // if (debug) console.log('*** LLAMADA DESDE EL HEADERS_MIDDLEWARE ***');
+                // if (debug) console.log(req.headers.user);
+                next();
+            })
+            .catch( (e) => {
+                next();
+            });
 
-        req.headers.user = user;
-
-        // if (debug) console.log('*** LLAMADA DESDE EL HEADERS_MIDDLEWARE ***');
-        // if (debug) console.log(req.headers.user);
-
-        next();
     };
   }
 }

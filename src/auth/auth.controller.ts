@@ -1,5 +1,6 @@
 import { Controller, Post, HttpStatus, Response, Body, Param, Request,
-  UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards, NotFoundException, Req } from '@nestjs/common';
+         UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards, NotFoundException, 
+         Req, ReflectMetadata } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -9,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import * as _ from 'lodash';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RejectTokenDto } from './dto/reject-token.dto';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('auth')
 @ApiBearerAuth()
@@ -81,6 +83,7 @@ export class AuthController {
 
   @Post('logout/:token')
   @UseGuards(AuthGuard('bearer'))
+  @ReflectMetadata('data', { resource: 'auth', method: 'logoutByToken' })
   @ApiOperation({ title: 'Logout a user with access token.'})
   @ApiResponse({ status: 200, description: 'The user has been logout.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -101,6 +104,7 @@ export class AuthController {
 
   @Post('token')
   @UseGuards(AuthGuard('bearer'))
+  @ReflectMetadata('data', { resource: 'auth', method: 'createToken' })
   @ApiOperation({ title: 'Renew access token if refresh token exists for an user.'})
   @ApiResponse({ status: 200, description: 'The token was generated.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -122,6 +126,7 @@ export class AuthController {
 
   @Post('token/reject')
   @UseGuards(AuthGuard('bearer'))
+  @ReflectMetadata('data', { resource: 'auth', method: 'rejectToken' })
   @ApiOperation({ title: 'Reject refresh token.'})
   @ApiResponse({ status: 204, description: 'The token was generated.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})

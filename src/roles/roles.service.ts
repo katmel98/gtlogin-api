@@ -11,6 +11,7 @@ import { Role } from './interfaces/role.interface';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RolesDto } from './dto/roles.dto';
 import { GroupsService } from '../groups/groups.service';
+import { PermissionsDto } from './dto/permissions.dto';
 
 @Injectable()
 export class RolesService {
@@ -47,15 +48,15 @@ export class RolesService {
         }
         try {
 
-        return this.roleModel.findOne({
-        _id: id,
-        }).then( (res) => {
-                if ( !res ) {
-                    throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
-                }
-                return res;
-            },
-        );
+            return this.roleModel.findOne({
+            _id: id,
+            }).then( (res) => {
+                    if ( !res ) {
+                        throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
+                    }
+                    return res;
+                },
+            );
 
         } catch (e) {
             throw e;
@@ -124,6 +125,38 @@ export class RolesService {
                     const group = await this.groupModel.findOne({ _id: id });
                     return group;
                 }
+            }
+        } catch (e) {
+          if ( e.message.error === 'NOT_FOUND' ){
+            throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
+          } else {
+            throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
+          }
+        }
+    }
+
+    // SET USER ROLES
+    async setPermissions(id: string, permissionsDto: PermissionsDto): Promise<any> {
+        if ( !ObjectID.isValid(id) ){
+            throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.BAD_REQUEST}, 400);
+        }
+        try {
+            const date = moment().valueOf();
+            let resp;
+            resp = await this.roleModel.updateOne({
+                _id: id,
+            }, {
+                $set: {
+                    updated_at: date,
+                    permissions: permissionsDto.permissions,
+                },
+            });
+            if ( resp.nModified === 0 ){
+              throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found or entity not modified`, status: HttpStatus.NOT_FOUND}, 404);
+            } else {
+                let role = await this.roleModel.findOne({ _id: id });
+                role = _.pick(role, ['_id', 'name', 'descrip', 'permissions', 'created_at', 'updated_at']);
+                return role;
             }
         } catch (e) {
           if ( e.message.error === 'NOT_FOUND' ){

@@ -1,7 +1,8 @@
 import { Controller, Get, Query, Param, Post, Body, Put, Delete,
             UseGuards, NotFoundException, BadRequestException, UnprocessableEntityException, 
             InternalServerErrorException, 
-            UsePipes} from '@nestjs/common';
+            UsePipes,
+            ReflectMetadata} from '@nestjs/common';
 import { ApiUseTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -12,16 +13,19 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { RulesDto } from './dto/rules.dto';
 import { RuleDto } from './dto/rule.dto';
 import { GenerateIdPipe } from 'common/pipes/generate-id.pipe';
+import { RolesGuard } from 'common/guards/roles.guard';
 
 @ApiUseTags('permissions')
 @ApiBearerAuth()
 @Controller('permissions')
+@UseGuards(RolesGuard)
 export class PermissionsController {
 
     constructor(private readonly permissionsService: PermissionsService){}
 
     @Get()
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'permissions', method: 'query' })
     @ApiOperation({ title: 'Find all instances of the model matched by filter from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -33,6 +37,7 @@ export class PermissionsController {
 
     @Get(':id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'permissions', method: 'queryById' })
     @ApiOperation({ title: 'Find a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The records has been successfully queried.'})
     @ApiResponse({ status: 401, description: 'Unauthorized.'})
@@ -53,6 +58,7 @@ export class PermissionsController {
 
     @Post()
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'permissions', method: 'create' })
     @ApiOperation({ title: 'Create a new instance of the model and persist it into the data source.' })
     @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
     @ApiResponse({ status: 400, description: 'Unprocessable Entity.'})
@@ -77,6 +83,7 @@ export class PermissionsController {
 
     @Delete(':id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'permissions', method: 'delete' })
     @ApiOperation({ title: 'Delete a model instance by {{id}} from the data source.'})
     @ApiResponse({ status: 200, description: 'The record has been successfully deleted.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})
@@ -99,6 +106,7 @@ export class PermissionsController {
 
     @Post('addRulesToPermission/:id')
     @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'permissions', method: 'update' })
     @ApiOperation({ title: 'Set permission\'s rules'})
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.'})
     @ApiResponse({ status: 400, description: 'Bad Request.'})

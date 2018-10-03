@@ -16,45 +16,51 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.headers.user;
     console.log('*** LLAMADA DESDE EL ROLE_GUARD ***');
-    console.log(user);
+    // console.log(user);
 
-    const hasPermission = () => user.permissions.some(
-      (item) => {
-
-        const result = _.find(
-          user.permissions,
-          (obj) => {
-              if ( obj.resource === '*') {
-                console.log('SE APLICA PARA TODOS LOS RECURSOS')
-                if ( obj.method === data['method'] ) {
-                  console.log('APLICA SOLO PARA EL METODO ', data['method']);
-                  console.log(obj);
-                  return obj;
-                } else if ( obj.method === '*' ) {
-                  console.log('APLICA SOLO PARA TODOS LOS METODOS (1)');
-                  console.log(obj);
-                  return obj;
-                }
-              }
-              if ( obj.method === '*' ) {
-                console.log('APLICA SOLO PARA TODOS LOS METODOS (2)');
-                if ( obj.resource === data['resource'] ){
-                  console.log('APLICA SOLO PARA EL RECURSO ', data['resource']);
-                  console.log(obj);
-                  return obj;
-                }
-              }
-              if ( obj.resource === data['resource'] && obj.method === data['method']) {
-                console.log('APLICA SOLO PARA UN RECURSO ESPECIFICO');
-                console.log(obj);
-                return obj;
-              }
+    const hasPermission = () => {
+      if ( user.permissions ) {
+        // SI EXISTEN LOS PERMISOS ATACHADOS AL USUARIO
+        return user.permissions.some(
+          (item) => {
+            const result = _.find(
+              user.permissions,
+              (obj) => {
+                  if ( obj.resource === '*') {
+                    console.log('SE APLICA PARA TODOS LOS RECURSOS')
+                    if ( obj.method === data['method'] ) {
+                      console.log('APLICA SOLO PARA EL METODO ', data['method']);
+                      console.log(obj);
+                      return obj;
+                    } else if ( obj.method === '*' ) {
+                      console.log('APLICA SOLO PARA TODOS LOS METODOS (1)');
+                      console.log(obj);
+                      return obj;
+                    }
+                  }
+                  if ( obj.method === '*' ) {
+                    console.log('APLICA SOLO PARA TODOS LOS METODOS (2)');
+                    if ( obj.resource === data['resource'] ){
+                      console.log('APLICA SOLO PARA EL RECURSO ', data['resource']);
+                      console.log(obj);
+                      return obj;
+                    }
+                  }
+                  if ( obj.resource === data['resource'] && obj.method === data['method']) {
+                    console.log('APLICA SOLO PARA UN RECURSO ESPECIFICO');
+                    console.log(obj);
+                    return obj;
+                  }
+              },
+            );
+            return result;
           },
         );
-        return result;
-
-      },
-    );
+      } else {
+        // SI NO EXISTEN LOS PERMISOS ATACHADOS AL USUARIO
+        return false;
+      }
+    };
 
     return user && hasPermission();
 

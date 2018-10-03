@@ -8,6 +8,7 @@ export const RoleSchema = new mongoose.Schema({
     unique: true,
   },
   descrip: String,
+  permissions: [],
   created_at: {
     type: Number,
     default: null,

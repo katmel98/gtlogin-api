@@ -45,20 +45,18 @@ export class GroupsService {
     // FINDONE
     async findOne(id: string): Promise<Group> {
         if ( !ObjectID.isValid(id) ){
-        throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.NOT_FOUND}, 400);
+            throw new HttpException({error: 'ID_NOT_VALID', message: `ID ${id} is not valid`, status: HttpStatus.NOT_FOUND}, 400);
         }
         try {
-
-        return this.groupModel.findOne({
-        _id: id,
-        }).then( (res) => {
-                if ( !res ) {
-                    throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
-                }
-                return res;
-            },
-        );
-
+            return this.groupModel.findOne({
+                _id: id,
+            }).then( (res) => {
+                    if ( !res ) {
+                        throw new HttpException({ error: 'NOT_FOUND', message: `ID ${id} not found`, status: HttpStatus.NOT_FOUND}, 404);
+                    }
+                    return res;
+                },
+            );
         } catch (e) {
             throw e;
         }
