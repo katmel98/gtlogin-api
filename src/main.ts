@@ -27,6 +27,7 @@ async function bootstrap() {
     .setTitle('GTLogin API')
     .setDescription(descrip)
     .setVersion('1.0')
+    .setCollapse('none')
     .addBearerAuth()
     .build();
 

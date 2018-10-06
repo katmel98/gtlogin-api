@@ -16,12 +16,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesDto } from '../roles/dto/roles.dto';
 import { Role } from 'roles/interfaces/role.interface';
 import { Permission } from 'permissions/interfaces/permission.interface';
+import { Group } from 'groups/interfaces/group.interface';
 
 @Injectable()
 export class UsersService {
   saltRounds: any;
   constructor(@InjectModel('User') private readonly userModel: Model<User>,
               @InjectModel('Role') private readonly roleModel: Model<Role>,
+              @InjectModel('Group') private readonly groupModel: Model<Group>,
               @InjectModel('Permission') private readonly permissionModel: Model<Permission>) {}
 
   getUserModel() {
@@ -251,33 +253,91 @@ export class UsersService {
 
   async findUserPermissionsById(id: string): Promise<any> {
     const user = await this.userModel.findOne({ _id: id });
+    let result;
+    let result_roles: Array<string>;
+    let result_groups: Array<string> = [];
+    let user_permissions = [];
 
     const roles = user.roles;
-    let user_permissions = [];
-    for ( const value of roles ) {
-      // SE RECORREN LOS POSIBLES ROLES DEL USUARIO
-      const name = value;
-      let result = await this.roleModel.findOne({ name });
-      result = _.pick(result, ['_id', 'permissions']);
-      const search_permissions = result.permissions;
-      for ( const item of search_permissions ) {
-        // SE RECORREN LOS IDS DE PERMISOS
-        let result_permission = await this.permissionModel.findOne({ _id: item });
-        result_permission = _.pick(result_permission, ['_id', 'rules']);
-        for (const element of result_permission.rules){
-          // SE RECORREN LOS ARRAYS DE REGLAS DE LOS PERMISOS Y SE ESCOGEN SOLO LOS QUE TENGAN EFFECT = 'ALLOW'
-          if ( element.effect === 'allow' ) {
-            const object = {
-              resource: element.resource,
-              method: element.method,
-              id: element._id.toString(),
-            };
-            user_permissions.push(object);
+    const groups = user.groups;
+
+    console.log("*** GRUPOS Y ROLES ***");
+    console.log(roles);
+    console.log(groups);
+
+    try {
+
+      // VERIFICANDO PERMISOS DE LOS ROLES ASIGNADOS AL USUARIO
+      if (roles.length > 0) {
+        for ( const role_value of roles ) {
+          // SE RECORREN LOS POSIBLES ROLES DEL USUARIO
+          const name = role_value;
+          let R = await this.roleModel.findOne({ name });
+          R = _.pick(R, ['_id', 'permissions']);
+          result_roles = JSON.parse(JSON.stringify(R.permissions));
+        }
+      }
+      // VERIFICANDO LOS PERMISOS ASIGNADOS A LOS GRUPOS A LOS QUE PERTENECE EL USUARIO
+      if (groups.length > 0) {
+        for ( const group_value of groups ) {
+          // SE RECORREN LOS POSIBLES GRUPOS DEL USUARIO
+          let group_permissions;
+          const group_name = group_value;
+
+          let groups_roles = await this.groupModel.findOne({ name: group_name });
+          groups_roles = _.pick(groups_roles, ['_id', 'roles']);
+          if (_.size(groups_roles.roles) > 0) {
+            for ( const role_value of groups_roles.roles ) {
+              // SE RECORREN LOS POSIBLES ROLES DEL GRUPO
+              const name = role_value;
+              let G = await this.roleModel.findOne({ name });
+              G = _.pick(G, ['_id', 'permissions']);
+              group_permissions = JSON.parse(JSON.stringify(G.permissions));
+            }
+            if ( group_permissions.length > 0) {
+              for (const item of group_permissions) {
+                result_groups.push(item);
+              }
+            }
           }
         }
       }
-    }
 
+      console.log("*** RESULT ROLES ***");
+      console.log(result_roles);
+      console.log("*** RESULT GROUPS ***");
+      console.log(result_groups);
+
+      if ( (result_roles.length > 0) || (result_groups.length > 0)) {
+
+        // result = _.merge(result_roles, result_groups);
+
+        console.log("La union de permisos de roles y grupos es: ");
+        console.log(result);
+
+        // const search_permissions = result;
+        const search_permissions = _.merge(result_roles, result_groups);
+
+        for ( const item of search_permissions ) {
+          // SE RECORREN LOS IDS DE PERMISOS
+          let result_permission = await this.permissionModel.findOne({ _id: item });
+          result_permission = _.pick(result_permission, ['_id', 'rules']);
+          for (const element of result_permission.rules){
+            // SE RECORREN LOS ARRAYS DE REGLAS DE LOS PERMISOS Y SE ESCOGEN SOLO LOS QUE TENGAN EFFECT = 'ALLOW'
+            if ( element.effect === 'allow' ) {
+              const object = {
+                resource: element.resource,
+                method: element.method,
+                id: element._id.toString(),
+              };
+              user_permissions.push(object);
+            }
+          }
+        }
+      }
+    } catch(e) {
+      console.log(e);
+    }
     user_permissions = _.uniqBy(user_permissions, 'id');
 
     return user_permissions;
