@@ -16,7 +16,7 @@ export class AuthService {
     const created_at = now;
     const tokens = [];
     let build;
-    const debug = process.env.DEBUG;
+    const debug = JSON.parse(process.env.DEBUG);
 
     // ACCESS TOKEN DEFINITION
     let expires_in = +process.env.TOKEN_LIFE * 1000; // Tiempo programado como segundos a milisegundos

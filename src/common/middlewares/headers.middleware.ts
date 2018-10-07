@@ -20,7 +20,7 @@ export class HeaderMiddleware implements NestMiddleware {
     return async (req, res, next) => {
         let decoded;
         let generate_auth_token = false;
-        const debug = process.env.DEBUG;
+        const debug = JSON.parse(process.env.DEBUG);
 
         const now = moment().valueOf();
 
@@ -152,8 +152,8 @@ export class HeaderMiddleware implements NestMiddleware {
 
         await this.usersService.findUserPermissionsById(user._id)
             .then( ( item ) => {
-                console.log('*** PERMISSIONS ***');
-                console.log(item);
+                if ( debug ) console.log('*** PERMISSIONS ***');
+                if ( debug ) console.log(item);
                 user['permissions'] = item;
                 req.headers.user = user;
                 // if (debug) console.log('*** LLAMADA DESDE EL HEADERS_MIDDLEWARE ***');
