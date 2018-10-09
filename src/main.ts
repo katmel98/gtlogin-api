@@ -9,6 +9,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from 'app.module';
 import { logger } from 'common/middlewares/logger.middleware';
 import { HeaderMiddleware } from 'common/middlewares/headers.middleware';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const instance = express();
@@ -17,7 +18,13 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, instance);
 
+  // Activando la opcion de compresion para los datos
   app.use(compression());
+  // Activando la opcion de manejo para evitar el CORS
+  app.enableCors();
+  // Activando la validación de data a traves de la libreria class-validator
+  app.useGlobalPipes(new ValidationPipe());
+
   // app.use(logger);
 
   const descrip = 'GTLogin API represents the GeddeonTech effort for create a simple but really functional REST API ' +
@@ -27,7 +34,6 @@ async function bootstrap() {
     .setTitle('GTLogin API')
     .setDescription(descrip)
     .setVersion('1.0')
-    .setCollapse('none')
     .addBearerAuth()
     .build();
 

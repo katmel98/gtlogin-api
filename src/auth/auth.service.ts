@@ -15,6 +15,7 @@ export class AuthService {
     const now = moment().valueOf();
     const created_at = now;
     const tokens = [];
+    let access_token: string;
     let build;
     const debug = JSON.parse(process.env.DEBUG);
 
@@ -27,6 +28,7 @@ export class AuthService {
     let token = jwt.sign({user, access}, secretOrKey, { expiresIn: expires_in });
     const User = await this.userService.getUserByEmail(user.email);
     tokens.push({access, token, expires_in, created_at, expires_at});
+    access_token = token;
 
     // EVALUATE REFRESH TOKEN DEFINITION IS NECCESSARY
     const existingRefreshToken = (_.find(User.tokens, (obj) => obj.access === 'refresh' ));
@@ -66,7 +68,7 @@ export class AuthService {
     User.last_login = now;
     await this.userService.update(User._id, User);
 
-    return { tokens };
+    return { email, name: User.name, lastname: User.lastname, surname: User.surname, access_token };
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {

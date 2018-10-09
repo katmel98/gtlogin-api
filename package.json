@@ -27,6 +27,8 @@
     "ajv": "^6.5.4",
     "arraylist": "^0.1.0",
     "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.1.9",
+    "class-validator": "^0.9.1",
     "compression": "^1.7.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
