@@ -6,7 +6,7 @@ export let config = {
         TOKEN_LIFE: 300,
         JWT_REFRESH_TOKEN_SECRET: 'sgnoigegw4oiekwnglkn4l4nlg32ntl3jng3ljg3lgjn3gj4b34gb3edvdsv',
         REFRESH_TOKEN_LIFE: 86400,
-        debug: false,
+        DEBUG: false,
     },
     development: {
         PORT: 3000,
