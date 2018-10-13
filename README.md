@@ -38,6 +38,7 @@ The framework runs on :3000 port, you can modify it in the configuration file.
 
 The most important directory is `src`, there live all framework's code.
 
+```
 gtlogin-api
 +-- src
 |   +-- auth
@@ -125,6 +126,7 @@ gtlogin-api
 |   +-- app.service.ts
 |   +-- main.hmr.ts
 |   +-- main.ts
+```
 
 ## Dependencies
 
