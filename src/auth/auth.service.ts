@@ -68,7 +68,7 @@ export class AuthService {
     User.last_login = now;
     await this.userService.update(User._id, User);
 
-    return { email, name: User.name, lastname: User.lastname, surname: User.surname, access_token };
+    return { email, name: User.name, lastname: User.lastname, surname: User.surname, access_token, expiresIn: expires_in };
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {

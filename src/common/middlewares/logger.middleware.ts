@@ -9,7 +9,17 @@ import { HttpStatus } from '@nestjs/common';
 export function logger(req, res, next) {
     const now = moment().format('YYYY-MM-DD HH:mm.ss');
     const ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const token = _.replace(req.headers.authorization, 'bearer ', '');
+    let jwt_string = '';
+    if ( _.includes(req.headers.authorization, 'bearer ') ) {
+        jwt_string = 'bearer ';
+    } else if ( _.includes(req.headers.authorization, 'Bearer ') ) {
+        jwt_string = 'Bearer ';
+    } else if ( _.includes(req.headers.authorization, 'BEARER ') ) {
+        jwt_string = 'BEARER ';
+    }
+
+    const token = _.replace(req.headers.authorization, jwt_string, '');
+    console.log('*** EL TOKEN: *** ', token);
     let user;
     if ( token ) {
         try {
