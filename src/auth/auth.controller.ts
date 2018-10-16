@@ -45,15 +45,17 @@ export class AuthController {
   @ApiOperation({ title: 'Registers a new user.'})
   @ApiResponse({ status: 200, description: 'The user has been created.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 422, description: 'Entity Validation Error.'})
   async registerUser(@Body() body: CreateUserDto) {
     try{
         return await this.usersService.create(body);
     } catch (e) {
       const message = e.message;
+      console.log(e);
       if ( e.name === 'ValidationError' ){
           throw new UnprocessableEntityException(message);
-      }else if ( e.name === 'MongoError' ){
-          throw new BadRequestException(message);
+      }else if ( e.response.error === 'ENTITY_VALIDATION_ERROR' ){
+          throw new UnprocessableEntityException(message);
       } else {
           throw new InternalServerErrorException();
       }
@@ -138,9 +140,6 @@ export class AuthController {
     console.log('VALIDANDO REJECT_TOKEN');
 
     const user = await this.authService.removeToken(body.token);
-
-    console.log('FOUND');
-    console.log(user);
 
     return res.status(HttpStatus.FORBIDDEN).json({ message: 'Token wrong!' });
   }

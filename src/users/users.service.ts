@@ -34,11 +34,31 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const createdUser = new this.userModel(createUserDto);
+      if ( !createdUser.name ){
+        createdUser.name = '';
+      }
+      if ( !createdUser.lastname ){
+        createdUser.lastname = '';
+      }
+      if ( !createdUser.surname ){
+        createdUser.surname = '';
+      }
       let user = await createdUser.save();
       user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);
       return user;
     } catch (e) {
-        return e;
+        if ( e.name === 'MongoError') {
+          throw new HttpException(
+            {
+              error: 'ENTITY_VALIDATION_ERROR',
+              message: `${createUserDto.email} already exists`,
+              status: HttpStatus.UNPROCESSABLE_ENTITY,
+            },
+            422,
+          );
+        } else {
+          return e;
+        }
     }
   }
 
@@ -253,9 +273,9 @@ export class UsersService {
 
   async findUserPermissionsById(id: string): Promise<any> {
     const user = await this.userModel.findOne({ _id: id });
-    let result;
-    let result_roles: Array<string> = [];
-    let result_groups: Array<string> = [];
+    // const result;
+    const result_roles: Array<string> = [];
+    const result_groups: Array<string> = [];
     let user_permissions = [];
 
     const roles = user.roles;

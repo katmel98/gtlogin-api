@@ -74,11 +74,15 @@ export function logger(req, res, next) {
     }
 
     console.log(requestInfo);
-    fs.appendFile(path.join(__dirname, '../../../logs/api.log'),
-    requestInfo + '\n', (err) => {
-        if (err){
-            console.log('Unable to append to server.log!');
-        }
+
+    fs.exists(path.join(__dirname, '../../../logs/api.log'), (exists) => {
+        fs.appendFile(path.join(__dirname, '../../../logs/api.log'),
+        requestInfo + '\n', (err) => {
+            if (err){
+                console.log('Unable to append to server.log!');
+            }
+        });
     });
+
     next();
 }

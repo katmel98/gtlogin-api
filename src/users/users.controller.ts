@@ -82,10 +82,11 @@ export class UsersController {
             return await this.usersService.create(createUserDto);
         } catch (e) {
             const message = e.message;
+            console.log(e);
             if ( e.name === 'ValidationError' ){
                 throw new UnprocessableEntityException(message);
-            }else if ( e.name === 'MongoError' ){
-                throw new BadRequestException(message);
+            }else if ( e.response.error === 'ENTITY_VALIDATION_ERROR' ){
+                throw new UnprocessableEntityException(message);
             } else {
                 throw new InternalServerErrorException();
             }

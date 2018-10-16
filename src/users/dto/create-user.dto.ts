@@ -6,25 +6,22 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 export class CreateUserDto {
 
     @IsNotEmpty()
+    @IsEmail()
     @ApiModelProperty()
-    readonly name: string;
-
-    @IsNotEmpty()
-    @ApiModelProperty()
-    readonly surname: string;
-
-    @IsNotEmpty()
-    @ApiModelProperty()
-    readonly lastname: string;
+    readonly email: string;
 
     @IsNotEmpty()
     @ApiModelProperty()
     readonly password: string;
 
-    @IsNotEmpty()
-    @IsEmail()
     @ApiModelProperty()
-    readonly email: string;
+    readonly name: string;
+
+    @ApiModelProperty()
+    readonly lastname: string;
+
+    @ApiModelProperty()
+    readonly surname: string;
 
     @ApiModelProperty()
     readonly created_at: number;

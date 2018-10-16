@@ -24,7 +24,7 @@ In order to install the GTLogin API, follow the next steps:
 
 ## Running the app
 
-At this moment, we are not provinding 'production' environment. You can use/modify the present code to achieve 'production' state, meanwhile, you can use it in development mode to test all functionality and create your own version.
+At this moment, I'm not provinding 'production' environment. You can use/modify the present code to achieve 'production' state, meanwhile, you can use it in development mode to test all functionality and create your own version.
 
 ```bash
 # development
