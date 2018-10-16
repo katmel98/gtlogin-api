@@ -29,12 +29,12 @@ export class AuthController {
       return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username and password are required!' });
     }
 
-    const user = await this.usersService.getUserByEmail(body.email);
+    const user = await this.usersService.getUserByEmail(body.email.toLowerCase());
 
     if (user) {
       res.set('user', user);
       if (await this.usersService.compareHash(body.password, user.password)) {
-        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email));
+        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email.toLowerCase()));
       }
     }
 
@@ -120,7 +120,7 @@ export class AuthController {
 
     if (user) {
         res.set('user', user);
-        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email));
+        return res.status(HttpStatus.OK).json(await this.authService.createToken(user['id'], user.email.toLowerCase()));
     }
 
     return res.status(HttpStatus.FORBIDDEN).json({ message: 'Username or password wrong!' });

@@ -34,6 +34,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const createdUser = new this.userModel(createUserDto);
+      createdUser.email = createdUser.email.toLowerCase();
       if ( !createdUser.name ){
         createdUser.name = '';
       }
@@ -42,6 +43,12 @@ export class UsersService {
       }
       if ( !createdUser.surname ){
         createdUser.surname = '';
+      }
+      if ( !createdUser.valid ){
+        createdUser.valid = false;
+      }
+      if ( !createdUser.email_verified ){
+        createdUser.email_verified = false;
       }
       let user = await createdUser.save();
       user = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'created_at', 'update_at']);

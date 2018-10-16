@@ -117,7 +117,7 @@ export class HeaderMiddleware implements NestMiddleware {
                     if ( user ) {
                         if ( user.logged_in ) {
                             // if (debug) console.log('*** GENERANDO EL REFRESH TOKEN ***');
-                            return res.status(HttpStatus.OK).json(await this.authService.createToken(user._id, user.email));
+                            return res.status(HttpStatus.OK).json(await this.authService.createToken(user._id, user.email.toLowerCase()));
                         } else {
                             const error = {
                                 statusCode: '401',

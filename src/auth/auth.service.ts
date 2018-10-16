@@ -26,7 +26,7 @@ export class AuthService {
     const user = { email };
     let access = 'auth';
     let token = jwt.sign({user, access}, secretOrKey, { expiresIn: expires_in });
-    const User = await this.userService.getUserByEmail(user.email);
+    const User = await this.userService.getUserByEmail(user.email.toLowerCase());
     tokens.push({access, token, expires_in, created_at, expires_at});
     access_token = token;
 
@@ -84,13 +84,10 @@ export class AuthService {
     try {
         decoded = jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET);
     } catch (e) {
-        // return new Promise((resolve, reject) => {
-        //     reject();
-        // });
         console.log(e);
         return Promise.reject();
     }
-    const User = await this.userService.getUserByEmail(decoded.user.email);
+    const User = await this.userService.getUserByEmail(decoded.user.email.toLowerCase());
     _.remove(User.tokens, item => item.token === token);
 
     await this.userService.update(User._id, User);

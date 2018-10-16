@@ -8,7 +8,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsEmail()
     @ApiModelProperty()
-    readonly email: string;
+    email: string;
 
     @IsNotEmpty()
     @ApiModelProperty()
