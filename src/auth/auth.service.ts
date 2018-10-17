@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
 import * as  _ from 'lodash';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { UsersService } from 'users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -95,4 +95,30 @@ export class AuthService {
     return { User };
   }
 
+  async getUserLoggedIn(email: string): Promise<any> {
+    try {
+
+      const res = await this.userService.getUserByEmail(email);
+
+      if ( !res ) {
+        throw new HttpException({ error: 'NOT_FOUND', message: `${email} not found`, status: HttpStatus.NOT_FOUND}, 404);
+      }
+      const user = _.pick(res, ['_id', 'name', 'surname', 'lastname', 'email', 'tokens', 'logged_in']);
+      const token = _.find(user.tokens, obj => {
+        return obj.access === 'auth';
+      });
+      if ( token ){
+        user.access_token = token.token;
+        user.expiresIn = token.expires_in;
+      }
+
+      const data = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'access_token', 'expiresIn', 'logged_in']);
+
+      return data;
+
+    } catch (e) {
+      throw e;
+    }
+
+  }
 }

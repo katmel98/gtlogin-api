@@ -10,7 +10,8 @@ import { AuthGuard } from '@nestjs/passport';
 import * as _ from 'lodash';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RejectTokenDto } from './dto/reject-token.dto';
-import { RolesGuard } from 'common/guards/roles.guard';
+import { User } from 'users/interfaces/user.interface';
+import { UserDataDto } from './dto/user-data.dto';
 
 @ApiUseTags('auth')
 @ApiBearerAuth()
@@ -59,6 +60,31 @@ export class AuthController {
       } else {
           throw new InternalServerErrorException();
       }
+    }
+  }
+
+  @Post('userData')
+  @ApiOperation({ title: 'Get user data if loggedin.'})
+  @ApiResponse({ status: 200, description: 'The data has been retrieved.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  async getUserData(@Response() res: any, @Body() body: UserDataDto): Promise<User> {
+    if (!(body && body.email)) {
+      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Email is required!' });
+    }
+    try {
+        const user = await this.authService.getUserLoggedIn(body.email.toLowerCase());
+        if ( !user ) {
+          throw new NotFoundException('User not found');
+        }
+        return res.status(HttpStatus.OK).json(user);
+
+    } catch (e){
+        const message = e.message.message;
+        if ( e.message.error === 'NOT_FOUND'){
+            throw new NotFoundException(message);
+        } else if ( e.message.error === 'ID_NOT_VALID'){
+            throw new BadRequestException(message);
+        }
     }
   }
 

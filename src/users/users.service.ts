@@ -104,7 +104,7 @@ export class UsersService {
         if ( !res ) {
           throw new HttpException({ error: 'NOT_FOUND', message: `${user_email} not found`, status: HttpStatus.NOT_FOUND}, 404);
         }
-        const user = _.pick(res, ['_id', 'name', 'surname', 'lastname', 'email', 'password', 'tokens', 'created_at', 'update_at']);
+        const user = _.pick(res, ['_id', 'name', 'surname', 'lastname', 'email', 'password', 'tokens', 'created_at', 'update_at', 'logged_in']);
         return user;
       } );
     } catch (e) {
