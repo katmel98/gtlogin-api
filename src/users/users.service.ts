@@ -361,6 +361,7 @@ export class UsersService {
       console.log(e);
     }
     user_permissions = _.uniqBy(user_permissions, 'id');
+    user_permissions = _.orderBy(user_permissions, ['effect', 'resource'], ['desc']);
 
     return user_permissions;
   }

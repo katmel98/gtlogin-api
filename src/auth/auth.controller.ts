@@ -1,6 +1,6 @@
 import { Controller, Post, HttpStatus, Response, Body, Param, Request,
          UnprocessableEntityException, BadRequestException, InternalServerErrorException, UseGuards, NotFoundException, 
-         Req, ReflectMetadata } from '@nestjs/common';
+         Req, ReflectMetadata, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -84,6 +84,8 @@ export class AuthController {
             throw new NotFoundException(message);
         } else if ( e.message.error === 'ID_NOT_VALID'){
             throw new BadRequestException(message);
+        } else if ( e.message.error === 'FORBIDDEN'){
+            throw new ForbiddenException(message);
         }
     }
   }

@@ -21,8 +21,8 @@ export class RolesGuard implements CanActivate {
     const hasPermission = () => {
       if ( user.permissions ) {
         // SI EXISTEN LOS PERMISOS ATACHADOS AL USUARIO
-        let permissions = user.permissions.slice();
-        permissions = _.orderBy(permissions, ['effect'], ['desc']);
+        const permissions = user.permissions.slice();
+        // permissions = _.orderBy(permissions, ['effect'], ['desc']);
         const result = permissions.find(
           (obj) => {
               if ( obj.resource === '*') {

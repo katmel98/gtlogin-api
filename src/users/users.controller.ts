@@ -298,4 +298,27 @@ export class UsersController {
 
     }
 
+    // GET /users/permissions/:id
+    @Get('/permissions/:id')
+    @UseGuards(AuthGuard('bearer'))
+    @ReflectMetadata('data', { resource: 'users', method: 'queryPermissions' })
+    @ApiOperation({ title: 'Find permissions instance for an user by {{id}}.'})
+    @ApiResponse({ status: 200, description: 'The record has been successfully queried.'})
+    @ApiResponse({ status: 400, description: 'Bad Request.'})
+    @ApiResponse({ status: 401, description: 'Unauthorized.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.'})
+    @ApiResponse({ status: 404, description: 'Not Found.'})
+    async findUserPermissionsById(@Param('id') id: string): Promise<User> {
+        try {
+            return await this.usersService.findUserPermissionsById(id);
+        } catch (e){
+            const message = e.message.message;
+            if ( e.message.error === 'NOT_FOUND'){
+                throw new NotFoundException(message);
+            } else if ( e.message.error === 'ID_NOT_VALID'){
+                throw new BadRequestException(message);
+            }
+        }
+    }
+
 }

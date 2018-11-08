@@ -108,13 +108,16 @@ export class AuthService {
         return obj.access === 'auth';
       });
       if ( token ){
-        user.access_token = token.token;
-        user.expiresIn = token.expires_in;
+        user['access_token'] = token.token;
+        user['expiresIn'] = token.expires_in;
       }
 
       const data = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'access_token', 'expiresIn', 'logged_in']);
-
-      return data;
+      if ( data.logged_in ){
+        return data;
+      } else {
+        throw new HttpException({ error: 'FORBIDDEN', message: `${email} is not authenticate`, status: HttpStatus.FORBIDDEN}, 403);
+      }
 
     } catch (e) {
       throw e;
