@@ -52,9 +52,12 @@ export class RolesGuard implements CanActivate {
               }
           },
         );
-
-        if ( result.effect === 'allow' ) {
-          return true;
+        if (result) {
+          if ( result.effect === 'allow' ) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
           return false;
         }
