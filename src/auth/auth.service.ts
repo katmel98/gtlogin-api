@@ -107,12 +107,14 @@ export class AuthService {
       const token = _.find(user.tokens, obj => {
         return obj.access === 'auth';
       });
+      user['fullname'] = `${user.name.trim()} ${user.lastname.trim()} ${user.surname.trim()}`;
+      user['fillname'] = user['fullname'].trim();
       if ( token ){
         user['access_token'] = token.token;
         user['expiresIn'] = token.expires_in;
       }
 
-      const data = _.pick(user, ['_id', 'name', 'surname', 'lastname', 'email', 'access_token', 'expiresIn', 'logged_in']);
+      const data = _.pick(user, ['_id', 'fullname', 'name', 'surname', 'lastname', 'email', 'access_token', 'expiresIn', 'logged_in']);
       if ( data.logged_in ){
         return data;
       } else {
