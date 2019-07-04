@@ -14,7 +14,9 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "webpack": "webpack --config webpack.config.js"
+    "webpack": "webpack --config webpack.config.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@nest-modules/mailer": "^0.4.1",
@@ -50,7 +52,8 @@
     "rxjs": "^6.4.0",
     "typeorm": "^0.2.12",
     "typescript": "^3.3.1",
-    "validator": "^10.11.0"
+    "validator": "^10.11.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^5.6.2",
@@ -84,5 +87,6 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage"
-  }
+  },
+  "snyk": true
 }
