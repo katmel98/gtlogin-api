@@ -30,7 +30,7 @@
     "arraylist": "^0.1.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.3.1",
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.13.0",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
