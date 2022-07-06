@@ -50,7 +50,7 @@
     "postgresql": "0.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.2",
-    "typeorm": "^0.2.25",
+    "typeorm": "^0.3.0",
     "typescript": "^3.9.7",
     "validator": "^13.1.1",
     "snyk": "^1.370.1"
