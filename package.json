@@ -24,7 +24,7 @@
     "@nestjs/core": "^7.4.2",
     "@nestjs/mongoose": "^7.0.2",
     "@nestjs/passport": "^7.1.0",
-    "@nestjs/swagger": "^4.5.12",
+    "@nestjs/swagger": "^11.2.6",
     "@nestjs/typeorm": "^7.1.0",
     "ajv": "^6.12.3",
     "arraylist": "^0.1.0",
